@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: luma-crypto-dashboard
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 3000
+      - key: DATABASE_DIR
+        value: /var/data/luma
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        value: https://luma-crypto-dashboard.onrender.com

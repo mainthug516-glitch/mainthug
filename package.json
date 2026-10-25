@@ -1,0 +1,23 @@
+{
+  "name": "luma-crypto-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Luma crypto dashboard with Express account authentication",
+  "engines": {
+    "node": ">=20.17"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "argon2": "^0.45.1",
+    "connect-sqlite3": "^0.9.18",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "sqlite3": "^6.0.1"
+  }
+}

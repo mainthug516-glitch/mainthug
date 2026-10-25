@@ -1,0 +1,1791 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071426">
+  <meta name="description" content="Luma is a clear, calm place to explore your crypto portfolio.">
+  <meta name="api-base" content="">
+  <title>Luma — Your crypto, in a clearer light</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      color-scheme: dark;
+      --ink: #edf3fb;
+      --muted: #a2b2c6;
+      --line: #243952;
+      --green: #f7931a;
+      --lime: #fff1d6;
+      --paper: #071426;
+      --white: #102039;
+      --shadow: 0 18px 54px rgba(0, 0, 0, .2);
+      font-family: "DM Sans", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); }
+    .ticker-bar { position: sticky; top: 0; z-index: 5; display: flex; height: 40px; align-items: center; overflow: hidden; border-bottom: 1px solid #253a52; color: #eaf0f8; background: #091a30; }
+    .ticker-label { position: relative; z-index: 1; display: flex; height: 100%; flex: 0 0 auto; align-items: center; gap: 7px; padding: 0 15px; border-right: 1px solid #253a52; color: #aebdd0; background: #091a30; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+    .ticker-label span { color: #f7931a; }
+    .ticker-window { min-width: 0; overflow: hidden; }
+    .ticker-track { display: flex; width: max-content; animation: ticker-scroll 34s linear infinite; }
+    .ticker-bar:hover .ticker-track, .ticker-bar:focus-within .ticker-track { animation-play-state: paused; }
+    .ticker-group { display: flex; flex: 0 0 auto; align-items: center; }
+    .ticker-item { display: flex; align-items: center; gap: 9px; padding: 0 24px; color: #aebdd0; font-size: 10px; white-space: nowrap; }
+    .ticker-item strong { color: #f3f6fb; font-weight: 700; }
+    .ticker-item .ticker-symbol { color: #f7931a; font-size: 13px; }
+    .ticker-item .ticker-positive { color: #8ed3aa; font-weight: 700; }
+    @keyframes ticker-scroll { to { transform: translateX(-50%); } }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .app { min-height: 100vh; display: flex; }
+    .sidebar {
+      position: fixed; inset: 40px auto 0 0; z-index: 3; display: flex; width: 244px;
+      flex-direction: column; padding: 29px 19px 22px; background: #fff;
+      border-right: 1px solid #eff2ef;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; margin: 1px 0 45px 8px; font: 800 23px Manrope, sans-serif; letter-spacing: -1.2px; }
+    .brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 11px; background: var(--green); color: var(--lime); }
+    .brand-mark svg { width: 19px; height: 19px; }
+    .side-label { margin: 0 0 12px 12px; color: #a5ada8; font-size: 10px; font-weight: 700; letter-spacing: 1.45px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-item { display: flex; height: 45px; align-items: center; gap: 13px; padding: 0 12px; border: 0; border-radius: 10px; color: #79847d; background: transparent; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600; transition: .18s ease; }
+    .nav-item svg { width: 18px; height: 18px; }
+    .nav-item:hover { color: var(--ink); background: #f6f8f5; }
+    .nav-item.active { color: #24593e; background: #eff7ee; }
+    .nav-item.active svg { color: #39865d; }
+    .nav-badge { margin-left: auto; padding: 3px 7px; border-radius: 6px; color: #5d8a4c; background: #e6f2da; font-size: 9px; }
+    .side-bottom { margin-top: auto; }
+    .promo { overflow: hidden; position: relative; margin: 0 1px 19px; padding: 16px 14px 14px; border: 1px solid #eaf0e6; border-radius: 13px; background: linear-gradient(145deg, #f2f8e9, #fbfcf8); }
+    .promo-orb { position: absolute; top: -20px; right: -12px; width: 79px; height: 79px; border: 1px solid #deebd5; border-radius: 50%; }
+    .promo-orb::after { position: absolute; inset: 11px; border: 1px solid #deebd5; border-radius: 50%; content: ""; }
+    .promo-title { margin-bottom: 6px; font: 700 12px Manrope, sans-serif; }
+    .promo-copy { max-width: 155px; color: #808b7f; font-size: 10px; line-height: 1.6; }
+    .learn-link { margin-top: 11px; padding: 0; border: 0; color: #3a784d; background: none; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .profile { display: flex; align-items: center; gap: 10px; padding: 15px 5px 0; border-top: 1px solid var(--line); }
+    .avatar { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: #345c49; background: #e5eee5; font: 700 11px Manrope, sans-serif; }
+    .avatar-photo { object-fit: cover; }
+    .profile-name { font-size: 11px; font-weight: 700; }
+    .profile-plan { margin-top: 3px; color: #9aa39d; font-size: 10px; }
+    .profile-more { margin-left: auto; border: 0; color: #97a098; background: none; cursor: pointer; }
+    main { width: calc(100% - 244px); max-width: 1550px; margin-left: 244px; padding: 30px 46px 44px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 35px; }
+    .breadcrumb { color: #9aa39d; font-size: 11px; }
+    .breadcrumb strong { color: #44534a; font-weight: 600; }
+    .top-actions { display: flex; align-items: center; gap: 11px; }
+    .icon-button { position: relative; display: grid; width: 37px; height: 37px; place-items: center; border: 1px solid #e9ede9; border-radius: 10px; color: #748078; background: white; cursor: pointer; }
+    .icon-button svg { width: 16px; height: 16px; }
+    .notification-dot { position: absolute; top: 8px; right: 9px; width: 6px; height: 6px; border: 1px solid white; border-radius: 50%; background: #e88763; }
+    .add-wallet { height: 37px; padding: 0 14px; border: 0; border-radius: 10px; color: #fff; background: #246346; cursor: pointer; font-size: 11px; font-weight: 700; transition: background .18s, transform .18s; }
+    .add-wallet:hover, .primary-button:hover { transform: translateY(-1px); background: #194e35; }
+    .account-button { height: 37px; padding: 0 14px; border: 1px solid #e7ece7; border-radius: 10px; color: #45634e; background: #fff; cursor: pointer; font-size: 11px; font-weight: 700; }
+    .account-button:hover { background: #f5f8f4; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 22px; }
+    .eyebrow { margin-bottom: 8px; color: #819086; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+    h1 { margin: 0; font: 700 27px Manrope, sans-serif; letter-spacing: -1.15px; }
+    .date-label { margin-top: 7px; color: #99a29b; font-size: 11px; }
+    .period-picker { display: flex; padding: 4px; border: 1px solid #e9ede9; border-radius: 9px; background: #fff; }
+    .period-button { padding: 7px 10px; border: 0; border-radius: 6px; color: #929b95; background: transparent; cursor: pointer; font-size: 10px; }
+    .period-button.active { color: #365842; background: #eff5ee; font-weight: 700; }
+    .overview-grid { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(245px, .92fr); gap: 18px; margin-bottom: 18px; }
+    .card { border: 1px solid #edf0ed; border-radius: 14px; background: var(--white); box-shadow: var(--shadow); }
+    .balance-card { min-height: 337px; padding: 24px 25px 18px; }
+    .card-topline { display: flex; align-items: center; justify-content: space-between; }
+    .card-label { color: #89948d; font-size: 11px; font-weight: 500; }
+    .visibility-button { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #edf0ed; border-radius: 8px; color: #96a098; background: white; cursor: pointer; }
+    .visibility-button svg { width: 15px; height: 15px; }
+    .balance-value { margin-top: 13px; font: 700 35px Manrope, sans-serif; letter-spacing: -1.8px; }
+    .balance-value .currency { margin-left: 4px; color: #9ba39d; font: 500 15px "DM Sans", sans-serif; letter-spacing: 0; }
+    .balance-change { display: flex; align-items: center; gap: 5px; margin-top: 8px; color: #37845a; font-size: 10px; font-weight: 700; }
+    .balance-change span { color: #9ba49d; font-weight: 400; }
+    .chart-wrap { height: 147px; margin-top: 15px; }
+    .chart-wrap svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .chart-labels { display: flex; justify-content: space-between; padding: 6px 1px 0; color: #a4aca6; font-size: 9px; }
+    .summary-card { display: flex; flex-direction: column; padding: 23px 22px 18px; }
+    .summary-title { font: 700 12px Manrope, sans-serif; }
+    .summary-subtitle { margin-top: 5px; color: #9ba49d; font-size: 10px; }
+    .allocation { display: grid; place-items: center; margin: 17px 0 15px; }
+    .donut { display: grid; width: 124px; height: 124px; place-items: center; border-radius: 50%; background: conic-gradient(#28694a 0 42%, #9dcca6 42% 68%, #d4e6b8 68% 84%, #f1d696 84% 93%, #e9eeea 93% 100%); }
+    .donut-inner { display: grid; width: 91px; height: 91px; place-content: center; border-radius: 50%; background: white; text-align: center; }
+    .donut-total { font: 700 17px Manrope, sans-serif; letter-spacing: -.7px; }
+    .donut-label { margin-top: 3px; color: #9aa39c; font-size: 9px; }
+    .legend { display: grid; gap: 10px; margin-top: auto; }
+    .legend-row { display: flex; align-items: center; gap: 8px; color: #69756d; font-size: 10px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 3px; background: #28694a; }
+    .legend-row:nth-child(2) .legend-dot { background: #9dcca6; }
+    .legend-row:nth-child(3) .legend-dot { background: #d4e6b8; }
+    .legend-row:nth-child(4) .legend-dot { background: #f1d696; }
+    .legend-row:nth-child(5) .legend-dot { background: #dce4de; }
+    .legend-percent { margin-left: auto; color: #929d95; font-variant-numeric: tabular-nums; }
+    .preorder-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 1.1fr); gap: 24px; align-items: center; margin-bottom: 18px; padding: 22px 24px; background: linear-gradient(125deg, #f1f7ed, #fff 70%); }
+    .preorder-kicker { margin-bottom: 7px; color: #52815b; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .preorder-title { margin: 0; font: 700 16px Manrope, sans-serif; letter-spacing: -.45px; }
+    .preorder-copy { max-width: 380px; margin: 7px 0 0; color: #7f8a82; font-size: 10px; line-height: 1.6; }
+    .preorder-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 9px; align-items: end; }
+    .preorder-field { display: grid; gap: 5px; color: #69756d; font-size: 9px; font-weight: 600; }
+    .preorder-field input { width: 100%; height: 37px; padding: 0 10px; border: 1px solid #e6ebe5; border-radius: 8px; outline: none; color: var(--ink); background: #fff; font-size: 10px; }
+    .preorder-field input:focus { border-color: #79a585; box-shadow: 0 0 0 3px rgba(79, 147, 103, .12); }
+    .preorder-submit { height: 37px; padding: 0 13px; border: 0; border-radius: 8px; color: #fff; background: #246346; cursor: pointer; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .preorder-submit:hover { background: #194e35; }
+    .preorder-status { grid-column: 1 / -1; min-height: 14px; margin: 0; color: #718076; font-size: 9px; line-height: 1.5; }
+    .preorder-status[data-state="error"] { color: #a34f49; }
+    .preorder-remove { grid-column: 1 / -1; justify-self: start; padding: 0; border: 0; color: #718076; background: none; cursor: pointer; font-size: 9px; text-decoration: underline; }
+    .preorder-remove[hidden] { display: none; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(245px, .92fr); gap: 18px; align-items: start; }
+    .assets-card { overflow: hidden; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; padding: 21px 22px 15px; }
+    .section-title { font: 700 13px Manrope, sans-serif; }
+    .section-subtitle { margin-top: 5px; color: #9ba49d; font-size: 10px; }
+    .see-all { padding: 0; border: 0; color: #387651; background: none; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .asset-filters { display: flex; gap: 6px; padding: 0 22px 14px; }
+    .filter-chip { padding: 6px 10px; border: 1px solid #edf0ed; border-radius: 7px; color: #8a958e; background: #fff; cursor: pointer; font-size: 9px; }
+    .filter-chip.active { border-color: #e8efe6; color: #3c6d4e; background: #f1f6ef; font-weight: 700; }
+    .table-head, .asset-row { display: grid; grid-template-columns: minmax(135px, 1.3fr) minmax(78px, .9fr) minmax(80px, .9fr) minmax(80px, .9fr); align-items: center; column-gap: 12px; padding: 0 22px; }
+    .table-head { height: 33px; border-top: 1px solid #f1f3f1; border-bottom: 1px solid #f1f3f1; color: #a0a9a2; background: #fcfdfc; font-size: 9px; }
+    .table-head span:not(:first-child) { text-align: right; }
+    .asset-row { min-height: 58px; border-bottom: 1px solid #f1f3f1; }
+    .asset-row[hidden] { display: none; }
+    .asset-row:last-child { border-bottom: 0; }
+    .asset-name { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .coin-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; font: 700 13px Manrope, sans-serif; }
+    .coin-icon.btc { color: #fff; background: #f0a33c; }
+    .coin-icon.eth { background: #7b83a2; }
+    .coin-icon.sol { background: #171b27; }
+    .coin-icon.usdc { background: #4b91e2; font-size: 9px; }
+    .coin-icon.ada { background: #3e73c4; }
+    .coin-title { overflow: hidden; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .coin-ticker { margin-top: 3px; color: #a1aaa3; font-size: 9px; }
+    .asset-numeric { text-align: right; font-size: 10px; font-variant-numeric: tabular-nums; }
+    .asset-units { margin-top: 4px; color: #a1aaa3; font-size: 9px; }
+    .positive, .negative { text-align: right; font-size: 10px; font-weight: 600; }
+    .positive { color: #418c60; }
+    .negative { color: #d77c75; }
+    .activity-card { overflow: hidden; }
+    .activity-list { padding: 0 20px 3px; }
+    .activity-row { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-top: 1px solid #f1f3f1; }
+    .activity-icon { display: grid; width: 31px; height: 31px; flex: 0 0 auto; place-items: center; border: 1px solid #edf0ed; border-radius: 10px; color: #68816f; background: #fafcf9; }
+    .activity-icon svg { width: 14px; height: 14px; }
+    .activity-main { min-width: 0; }
+    .activity-name { font-size: 10px; font-weight: 600; }
+    .activity-date { margin-top: 4px; color: #a2aaa4; font-size: 9px; }
+    .activity-amount { margin-left: auto; text-align: right; font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .activity-amount small { display: block; margin-top: 4px; color: #a1aaa3; font-size: 9px; font-weight: 400; }
+    .market-note { display: flex; align-items: center; gap: 9px; margin-top: 17px; padding: 13px 15px; border: 1px solid #ebf0e9; border-radius: 11px; color: #79867c; background: #f4f8f1; font-size: 10px; line-height: 1.5; }
+    .market-note svg { width: 15px; height: 15px; flex: 0 0 auto; color: #528b61; }
+    .market-note strong { color: #42694b; }
+    .toast { position: fixed; right: 25px; bottom: 23px; z-index: 8; padding: 12px 16px; border: 1px solid #e8eee8; border-radius: 10px; color: #3c5744; background: white; box-shadow: var(--shadow); font-size: 11px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: .2s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 10; display: none; place-items: center; padding: 18px; background: rgba(20, 32, 25, .28); backdrop-filter: blur(3px); }
+    .modal-backdrop.open { display: grid; }
+    .modal { width: min(100%, 365px); padding: 24px; border: 1px solid #edf0ed; border-radius: 16px; background: white; box-shadow: 0 24px 80px rgba(25, 46, 33, .17); }
+    .modal-top { display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font: 700 17px Manrope, sans-serif; letter-spacing: -.4px; }
+    .modal-close { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #edf0ed; border-radius: 9px; color: #87928a; background: white; cursor: pointer; font-size: 18px; }
+    .modal-copy { margin: 13px 0 17px; color: #7f8a82; font-size: 12px; line-height: 1.7; }
+    .demo-notice { margin: 0 0 18px; padding: 11px 12px; border: 1px solid #eaf0e8; border-radius: 9px; color: #56705b; background: #f4f8f1; font-size: 10px; line-height: 1.6; }
+    .primary-button { width: 100%; height: 41px; border: 0; border-radius: 9px; color: white; background: #246346; cursor: pointer; font-size: 11px; font-weight: 700; transition: .18s; }
+    .page-heading[hidden], .overview-grid[hidden], .preorder-card[hidden], .content-grid[hidden], .settings-view[hidden], .notifications-view[hidden] { display: none !important; }
+    .settings-view { max-width: 1120px; }
+    .settings-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin: 0 0 20px; }
+    .settings-heading h1 { font: 700 27px Manrope, sans-serif; letter-spacing: -1.15px; }
+    .settings-heading p { margin: 7px 0 0; color: #a5b5c8; font-size: 11px; }
+    .settings-layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 17px; align-items: start; }
+    .settings-categories, .settings-panel { overflow: hidden; border: 1px solid #243850; border-radius: 14px; background: #0e1d32; box-shadow: 0 18px 54px rgba(0, 0, 0, .16); }
+    .settings-categories { padding: 10px; }
+    .settings-categories-label { padding: 9px 10px 10px; color: #9aabc0; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+    .settings-category { display: flex; width: 100%; min-height: 39px; align-items: center; gap: 10px; padding: 0 10px; border: 0; border-radius: 8px; color: #aebdd0; background: transparent; text-align: left; cursor: pointer; font-size: 11px; font-weight: 600; transition: .16s; }
+    .settings-category:hover { color: #edf3fb; background: #14263d; }
+    .settings-category[aria-selected="true"] { color: #fff3df; background: #1b2c43; }
+    .settings-category-icon { display: grid; width: 22px; height: 22px; flex: 0 0 auto; place-items: center; border-radius: 7px; color: #ffbd6a; background: #2a2b2a; font-size: 12px; }
+    .settings-panel { min-height: 480px; }
+    .settings-panel-head { padding: 23px 25px 18px; border-bottom: 1px solid #243850; }
+    .settings-panel-head h2 { margin: 0; color: #edf3fb; font: 700 16px Manrope, sans-serif; letter-spacing: -.4px; }
+    .settings-panel-head p { margin: 6px 0 0; color: #9aabc0; font-size: 10px; line-height: 1.6; }
+    .settings-panel-content { padding: 21px 25px 24px; }
+    .settings-pane[hidden] { display: none !important; }
+    .profile-editor { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+    .profile-editor .avatar { width: 62px; height: 62px; border: 2px solid #34465c; font-size: 17px; }
+    .profile-editor-title { margin-bottom: 5px; color: #edf3fb; font-size: 11px; font-weight: 700; }
+    .profile-editor-copy, .settings-hint { color: #9aabc0; font-size: 10px; line-height: 1.65; }
+    .file-picker { display: inline-flex; align-items: center; min-height: 30px; margin-top: 9px; padding: 0 10px; border: 1px solid #354860; border-radius: 7px; color: #ffd08a; background: #12233a; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .file-picker input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .settings-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .settings-field { display: grid; min-width: 0; gap: 7px; color: #c4d0df; font-size: 10px; font-weight: 600; }
+    .settings-field input, .settings-field select { width: 100%; min-width: 0; height: 39px; padding: 0 11px; border: 1px solid #354860; border-radius: 8px; outline: none; color: #edf3fb; background: #091a30; font-size: 11px; }
+    .settings-field input:focus, .settings-field select:focus { border-color: #e99432; box-shadow: 0 0 0 3px rgba(247, 147, 26, .17); }
+    .settings-section-title { margin: 20px 0 11px; color: #edf3fb; font-size: 11px; font-weight: 700; }
+    .settings-rows { display: grid; }
+    .setting-row { display: flex; min-height: 60px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #243850; }
+    .setting-row:last-child { border-bottom: 0; }
+    .setting-row-copy { min-width: 0; }
+    .setting-row-title { color: #e5edf7; font-size: 10px; font-weight: 600; }
+    .setting-row-description { margin-top: 4px; color: #9aabc0; font-size: 9px; line-height: 1.5; }
+    .switch-control { position: relative; display: inline-flex; width: 36px; height: 20px; flex: 0 0 auto; align-items: center; }
+    .switch-control input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .switch-track { width: 36px; height: 20px; border-radius: 12px; background: #354860; cursor: pointer; transition: .16s; }
+    .switch-track::after { display: block; width: 14px; height: 14px; margin: 3px; border-radius: 50%; background: #d3dfed; content: ""; transition: .16s; }
+    .switch-control input:checked + .switch-track { background: #f7931a; }
+    .switch-control input:checked + .switch-track::after { transform: translateX(16px); background: #071426; }
+    .switch-control input:focus-visible + .switch-track { outline: 2px solid #ffbd6a; outline-offset: 2px; }
+    .choice-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .choice-button { min-height: 35px; padding: 0 12px; border: 1px solid #354860; border-radius: 8px; color: #adbdcf; background: #091a30; cursor: pointer; font-size: 10px; font-weight: 600; }
+    .choice-button[aria-pressed="true"] { border-color: #80531f; color: #ffd08a; background: #2a241c; }
+    .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .payment-method { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-height: 130px; padding: 14px 14px 12px; border: 1px solid #354860; border-radius: 12px; color: #e5edf7; background: #091a30; cursor: pointer; text-align: left; transition: .16s ease; }
+    .payment-method:hover { border-color: #6d8bb2; transform: translateY(-1px); }
+    .payment-method[aria-pressed="true"] { border-color: #f7931a; background: #201b12; box-shadow: inset 0 0 0 1px rgba(247, 147, 26, .2); }
+    .payment-method-icon { display: grid; width: 33px; height: 33px; place-items: center; border-radius: 10px; background: rgba(247, 147, 26, .14); font-size: 18px; }
+    .payment-method .label { font-size: 11px; font-weight: 700; }
+    .payment-method .meta { margin-top: 2px; color: #9aabc0; font-size: 9px; line-height: 1.5; }
+    .payment-method .tag { margin-top: auto; padding: 4px 7px; border-radius: 999px; background: rgba(255, 255, 255, .05); color: #d0ddea; font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+    .payment-method[aria-pressed="true"] .tag { background: #f7931a; color: #241606; }
+    .theme-choice { display: inline-flex; align-items: center; gap: 8px; }
+    .theme-swatch { width: 13px; height: 13px; border: 1px solid #78899a; border-radius: 50%; background: #0c1c30; }
+    .theme-swatch.light { background: #f7f9fc; }
+    .theme-swatch.blue { border-color: #4d96fa; background: #3986e8; }
+    .theme-swatch.yellow { border-color: #f7931a; background: #f7931a; }
+    .settings-notice { margin-top: 16px; padding: 11px 12px; border: 1px solid #354860; border-radius: 9px; color: #adbdcf; background: #14263d; font-size: 10px; line-height: 1.6; }
+    .settings-notice strong { color: #ffd08a; }
+    .settings-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+    .settings-save { display: inline-flex; min-height: 37px; align-items: center; padding: 0 16px; border: 0; border-radius: 8px; color: #241606; background: #f7931a; cursor: pointer; font-size: 10px; font-weight: 700; text-decoration: none; }
+    .settings-save:hover { background: #ffad47; }
+    .settings-device { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid #243850; }
+    .settings-device:last-child { border-bottom: 0; }
+    .device-icon { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border: 1px solid #354860; border-radius: 9px; color: #ffbd6a; background: #12233a; font-size: 15px; }
+    .device-info { min-width: 0; }
+    .device-name { color: #e5edf7; font-size: 10px; font-weight: 600; }
+    .device-meta { margin-top: 4px; color: #9aabc0; font-size: 9px; }
+    .device-current { margin-left: auto; color: #8ed3aa; font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .text-button { padding: 6px 0; border: 0; color: #ffbd6a; background: none; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .danger-button { min-height: 34px; padding: 0 11px; border: 1px solid #754246; border-radius: 8px; color: #ff9b92; background: #2c202a; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .settings-faq { padding: 13px 0; border-bottom: 1px solid #243850; }
+    .settings-faq:last-child { border-bottom: 0; }
+    .settings-faq summary { color: #e5edf7; cursor: pointer; font-size: 10px; font-weight: 600; }
+    .settings-faq p { margin: 9px 0 0; color: #9aabc0; font-size: 10px; line-height: 1.65; }
+    body[data-accent="blue"] { --setting-accent: #4d96fa; }
+    body[data-accent="yellow"] { --setting-accent: #f5c84c; }
+    body[data-accent="blue"] .settings-category-icon, body[data-accent="blue"] .file-picker, body[data-accent="blue"] .text-button { color: #8bbcff; }
+    body[data-accent="blue"] .settings-category[aria-selected="true"] { color: #d8e9ff; background: #1c3657; }
+    body[data-accent="blue"] .choice-button[aria-pressed="true"] { border-color: #3b6ea6; color: #b8d7ff; background: #162d48; }
+    body[data-accent="blue"] .settings-save, body[data-accent="blue"] .switch-control input:checked + .switch-track { background: #4d96fa; }
+    body[data-accent="blue"] .switch-control input:checked + .switch-track::after { background: #071426; }
+    body[data-accent="blue"] .settings-field input:focus, body[data-accent="blue"] .settings-field select:focus { border-color: #4d96fa; box-shadow: 0 0 0 3px rgba(77, 150, 250, .17); }
+    body[data-accent="blue"] .theme-swatch.selected { outline-color: #4d96fa; }
+    body[data-color-mode="light"] { color-scheme: light; --ink: #15221d; --paper: #f5f8f5; --white: #fff; background: #f5f8f5; color: #15221d; }
+    body[data-color-mode="light"] .sidebar { background: #fff; border-color: #e6ece6; }
+    body[data-color-mode="light"] .brand-mark { color: #fff; background: #28694a; }
+    body[data-color-mode="light"] .nav-item { color: #69776d; }
+    body[data-color-mode="light"] .nav-item:hover, body[data-color-mode="light"] .nav-item.active { color: #24593e; background: #eff7ee; }
+    body[data-color-mode="light"] .nav-item.active svg, body[data-color-mode="light"] .learn-link { color: #39865d; }
+    body[data-color-mode="light"] .promo { border-color: #eaf0e6; background: linear-gradient(145deg, #f2f8e9, #fbfcf8); }
+    body[data-color-mode="light"] .promo-orb, body[data-color-mode="light"] .promo-orb::after { border-color: #deebd5; }
+    body[data-color-mode="light"] .promo-copy, body[data-color-mode="light"] .profile-plan { color: #808b7f; }
+    body[data-color-mode="light"] .profile { border-color: #edf0ed; }
+    body[data-color-mode="light"] .avatar { color: #345c49; background: #e5eee5; }
+    body[data-color-mode="light"] .topbar .breadcrumb { color: #9aa39d; }
+    body[data-color-mode="light"] .breadcrumb strong { color: #44534a; }
+    body[data-color-mode="light"] .icon-button, body[data-color-mode="light"] .account-button { border-color: #e9ede9; color: #748078; background: white; }
+    body[data-color-mode="light"] .add-wallet, body[data-color-mode="light"] .primary-button { color: white; background: #246346; }
+    body[data-color-mode="light"] .page-heading .eyebrow { color: #819086; }
+    body[data-color-mode="light"] .date-label { color: #99a29b; }
+    body[data-color-mode="light"] .card { border-color: #edf0ed; background: white; box-shadow: 0 18px 54px rgba(27, 51, 39, .055); }
+    body[data-color-mode="light"] .balance-card { background: white; }
+    body[data-color-mode="light"] .visibility-button { border-color: #edf0ed; color: #96a098; background: white; }
+    body[data-color-mode="light"] .chart-grid { stroke: #f0f3f0; }
+    body[data-color-mode="light"] .summary-title, body[data-color-mode="light"] .section-title, body[data-color-mode="light"] .activity-name { color: #15221d; }
+    body[data-color-mode="light"] .donut-inner { background: white; }
+    body[data-color-mode="light"] .table-head { border-color: #f1f3f1; color: #a0a9a2; background: #fcfdfc; }
+    body[data-color-mode="light"] .asset-row, body[data-color-mode="light"] .activity-row { border-color: #f1f3f1; }
+    body[data-color-mode="light"] .market-note { border-color: #ebf0e9; color: #79867c; background: #f4f8f1; }
+    body[data-color-mode="light"] .market-note strong, body[data-color-mode="light"] .market-note svg { color: #528b61; }
+    body[data-color-mode="light"] .settings-categories, body[data-color-mode="light"] .settings-panel { border-color: #edf0ed; background: white; box-shadow: 0 18px 54px rgba(27, 51, 39, .055); }
+    body[data-color-mode="light"] .settings-categories-label, body[data-color-mode="light"] .settings-heading p, body[data-color-mode="light"] .settings-panel-head p, body[data-color-mode="light"] .profile-editor-copy, body[data-color-mode="light"] .settings-hint, body[data-color-mode="light"] .setting-row-description, body[data-color-mode="light"] .device-meta, body[data-color-mode="light"] .settings-faq p { color: #849087; }
+    body[data-color-mode="light"] .settings-category { color: #66736a; }
+    body[data-color-mode="light"] .settings-category:hover { color: #15221d; background: #f6f8f5; }
+    body[data-color-mode="light"] .settings-category[aria-selected="true"] { color: #24593e; background: #eff7ee; }
+    body[data-color-mode="light"] .settings-category-icon { color: #39865d; background: #eff7ee; }
+    body[data-color-mode="light"] .settings-panel-head, body[data-color-mode="light"] .setting-row, body[data-color-mode="light"] .settings-device, body[data-color-mode="light"] .settings-faq { border-color: #edf0ed; }
+    body[data-color-mode="light"] .settings-panel-head h2, body[data-color-mode="light"] .profile-editor-title, body[data-color-mode="light"] .settings-section-title, body[data-color-mode="light"] .setting-row-title, body[data-color-mode="light"] .device-name, body[data-color-mode="light"] .settings-faq summary { color: #15221d; }
+    body[data-color-mode="light"] .profile-editor .avatar { border-color: #e3e9e3; }
+    body[data-color-mode="light"] .file-picker, body[data-color-mode="light"] .choice-button, body[data-color-mode="light"] .settings-field input, body[data-color-mode="light"] .settings-field select { border-color: #e4eae4; color: #33443a; background: #fff; }
+    body[data-color-mode="light"] .switch-track { background: #c8d1ca; }
+    body[data-color-mode="light"] .switch-control input:checked + .switch-track { background: #39865d; }
+    body[data-color-mode="light"] .switch-control input:checked + .switch-track::after { background: white; }
+    body[data-color-mode="light"] .choice-button[aria-pressed="true"] { border-color: #cbdcc9; color: #28694a; background: #eff7ee; }
+    body[data-color-mode="light"] .settings-notice { border-color: #e6eee3; color: #657566; background: #f5f8f2; }
+    body[data-color-mode="light"] .settings-notice strong { color: #42694b; }
+    body[data-color-mode="light"] .device-icon { border-color: #e5ebe5; color: #528b61; background: #f7faf6; }
+    body[data-color-mode="light"] .settings-save { color: white; background: #28694a; }
+    body[data-color-mode="light"] .danger-button { border-color: #efd6d4; color: #a34f49; background: #fff7f6; }
+    body[data-color-mode="light"] .modal { border-color: #edf0ed; background: white; }
+    body[data-color-mode="light"] .modal-close { border-color: #edf0ed; color: #87928a; background: white; }
+    body[data-color-mode="light"] .modal-copy { color: #7f8a82; }
+    body[data-color-mode="light"] .toast { border-color: #e8eee8; color: #3c5744; background: white; }
+    body[data-accent="blue"][data-color-mode="light"] .settings-category-icon, body[data-accent="blue"][data-color-mode="light"] .file-picker, body[data-accent="blue"][data-color-mode="light"] .text-button { color: #3976c5; }
+    body[data-accent="blue"][data-color-mode="light"] .settings-category[aria-selected="true"] { color: #285b95; background: #eaf3ff; }
+    body[data-accent="blue"][data-color-mode="light"] .choice-button[aria-pressed="true"] { border-color: #c9ddf5; color: #285b95; background: #eaf3ff; }
+    body[data-accent="blue"][data-color-mode="light"] .settings-save, body[data-accent="blue"][data-color-mode="light"] .switch-control input:checked + .switch-track { background: #3976c5; }
+    body[data-accent="blue"][data-color-mode="light"] .switch-control input:checked + .switch-track::after { background: white; }
+    @media (max-width: 900px) {
+      .settings-layout { grid-template-columns: 205px minmax(0, 1fr); gap: 12px; }
+      .settings-panel-head, .settings-panel-content { padding-right: 18px; padding-left: 18px; }
+    }
+    @media (max-width: 580px) {
+      .settings-heading { align-items: flex-start; flex-direction: column; }
+      .settings-layout { grid-template-columns: 1fr; }
+      .settings-categories { display: flex; gap: 5px; overflow-x: auto; padding: 9px; }
+      .settings-categories-label { display: none; }
+      .settings-category { width: auto; min-height: 34px; flex: 0 0 auto; gap: 7px; padding: 0 9px; font-size: 9px; white-space: nowrap; }
+      .settings-category-icon { width: 19px; height: 19px; }
+      .settings-panel { min-height: 0; }
+      .settings-panel-head { padding: 18px 16px 14px; }
+      .settings-panel-content { padding: 15px 16px 19px; }
+      .settings-fields { grid-template-columns: 1fr; gap: 12px; }
+      .settings-heading h1 { font-size: 24px; }
+    }
+    .auth-form { display: grid; gap: 11px; margin: 16px 0; }
+    .auth-field { display: grid; gap: 5px; color: #69756d; font-size: 10px; font-weight: 600; }
+    .auth-form[hidden], .auth-switch[hidden], .auth-field[hidden], .demo-notice[hidden], #modal-done[hidden] { display: none; }
+    .auth-field input { width: 100%; height: 39px; padding: 0 11px; border: 1px solid #e6ebe5; border-radius: 8px; outline: none; color: var(--ink); background: #fff; font-size: 11px; }
+    .auth-field input:focus { border-color: #79a585; box-shadow: 0 0 0 3px rgba(79, 147, 103, .12); }
+    .auth-error { min-height: 15px; margin: 0; color: #a34f49; font-size: 10px; line-height: 1.5; }
+    .auth-switch { padding: 0; border: 0; color: #387651; background: none; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .mobile-menu { display: none; }
+    @media (min-width: 1440px) {
+      main { padding-right: 62px; padding-left: 62px; }
+      .balance-card { min-height: 360px; }
+      .chart-wrap { height: 164px; }
+    }
+    @media (max-width: 1080px) {
+      main { padding-right: 25px; padding-left: 25px; }
+      .overview-grid, .content-grid { grid-template-columns: minmax(0, 1.5fr) minmax(225px, .85fr); gap: 13px; }
+      .table-head, .asset-row { grid-template-columns: minmax(115px, 1.2fr) minmax(72px, .9fr) minmax(72px, .85fr) minmax(70px, .8fr); column-gap: 7px; padding-right: 14px; padding-left: 14px; }
+      .section-head { padding-right: 15px; padding-left: 15px; }
+      .asset-filters { padding-right: 15px; padding-left: 15px; }
+    }
+    @media (max-width: 790px) {
+      .sidebar { inset: 40px auto 0 0; width: 69px; align-items: center; padding: 20px 9px; }
+      .brand { margin: 0 0 35px; }
+      .brand-word, .side-label, .nav-item span, .nav-badge, .promo, .profile > div:not(.avatar), .profile-more { display: none; }
+      .nav-list { width: 100%; }
+      .nav-item { width: 48px; justify-content: center; padding: 0; }
+      .nav-item svg { width: 19px; height: 19px; }
+      .profile { justify-content: center; width: 100%; padding: 14px 0 0; }
+      main { width: calc(100% - 69px); margin-left: 69px; padding: 25px 23px 35px; }
+      .overview-grid, .content-grid { grid-template-columns: minmax(0, 1.5fr) minmax(205px, .9fr); }
+      .preorder-card { grid-template-columns: 1fr; gap: 16px; }
+    }
+    @media (max-width: 580px) {
+      .sidebar { inset: auto 0 0; width: 100%; height: 62px; flex-direction: row; justify-content: center; padding: 5px 13px; border-top: 1px solid #edf0ed; border-right: 0; }
+      .brand, .side-bottom { display: none; }
+      .nav-list { display: flex; width: 100%; max-width: 430px; justify-content: space-between; gap: 6px; }
+      .nav-item { width: 48px; height: 46px; }
+      .nav-item:nth-child(5) { display: none; }
+      main { width: 100%; margin: 0; padding: 22px 16px 85px; }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 12px; margin-bottom: 26px; }
+      .top-actions { width: 100%; justify-content: flex-end; gap: 7px; }
+      .icon-button { width: 34px; height: 34px; }
+      .add-wallet { height: 34px; padding: 0 10px; font-size: 10px; }
+      .account-button { height: 34px; padding: 0 9px; font-size: 9px; }
+      .page-heading { align-items: flex-start; gap: 10px; }
+      h1 { font-size: 24px; }
+      .period-picker { flex: 0 0 auto; }
+      .period-button { padding: 7px 8px; }
+      .overview-grid, .content-grid { grid-template-columns: 1fr; gap: 13px; }
+      .preorder-card { gap: 14px; padding: 19px 16px; }
+      .preorder-form { grid-template-columns: 1fr; }
+      .preorder-submit { width: 100%; }
+      .balance-card { min-height: 318px; padding: 21px 19px 17px; }
+      .chart-wrap { height: 139px; }
+      .summary-card { padding: 20px; }
+      .allocation { margin: 15px 0; }
+      .legend { grid-template-columns: 1fr 1fr; column-gap: 18px; }
+      .table-head, .asset-row { grid-template-columns: minmax(105px, 1.2fr) minmax(69px, .9fr) minmax(61px, .8fr) minmax(57px, .7fr); column-gap: 5px; padding-right: 12px; padding-left: 12px; }
+      .section-head { padding: 18px 13px 13px; }
+      .asset-filters { padding-right: 13px; padding-left: 13px; }
+      .coin-icon { width: 27px; height: 27px; }
+      .coin-title, .asset-numeric, .positive, .negative { font-size: 9px; }
+      .toast { right: 13px; bottom: 75px; left: 13px; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      .ticker-track { animation: none; transform: none; }
+    }
+    .sidebar { background: #0b1b30; border-right-color: #22364d; }
+    .brand-mark { background: #f7931a; color: #071426; }
+    .nav-item { color: #9baec3; }
+    .nav-item:hover, .nav-item.active { color: #fff3df; background: #1b2c43; }
+    .nav-item.active svg, .learn-link { color: #ffad47; }
+    .nav-badge { color: #ffd08a; background: #382b1c; }
+    .promo { border-color: #263a50; background: linear-gradient(145deg, #142840, #0f1d31); }
+    .promo-orb, .promo-orb::after { border-color: #2b4057; }
+    .promo-copy, .profile-plan { color: #a5b5c8; }
+    .profile { border-top-color: #263a50; }
+    .avatar { color: #ffcf91; background: #34291e; }
+    .topbar .breadcrumb { color: #9aacc1; }
+    .breadcrumb strong { color: #e8eff8; }
+    .icon-button, .account-button { border-color: #2a3c52; color: #d3dfed; background: #102039; }
+    .icon-button:hover, .account-button:hover { background: #192c45; }
+    .notification-dot { border-color: #102039; }
+    .add-wallet, .primary-button, .preorder-submit { color: #241606; background: #f7931a; }
+    .add-wallet:hover, .primary-button:hover, .preorder-submit:hover { background: #ffad47; }
+    .account-button { color: #ffd08a; }
+    .page-heading .eyebrow { color: #ffad47; }
+    .date-label, .card-label, .summary-subtitle, .section-subtitle { color: #a5b5c8; }
+    .period-picker, .period-button.active, .filter-chip.active { border-color: #34465c; color: #f2bd76; background: #1a2b42; }
+    .period-button { color: #a5b5c8; }
+    .card { border-color: #243850; background: #0e1d32; box-shadow: 0 18px 54px rgba(0, 0, 0, .16); }
+    .balance-card { background: radial-gradient(ellipse at top right, rgba(247, 147, 26, .07), transparent 44%), #0e1d32; }
+    .visibility-button { border-color: #34465c; color: #adbdcf; background: #12233a; }
+    .balance-change { color: #8ed3aa; }
+    .balance-change span, .chart-labels, .legend-percent, .asset-units, .coin-ticker, .activity-date, .activity-amount small { color: #9aabc0; }
+    .balance-value .currency { color: #9aabc0; }
+    .summary-title, .section-title, .activity-name { color: #edf3fb; }
+    .donut-inner { background: #0e1d32; }
+    .legend-row { color: #c4d0df; }
+    .donut { background: conic-gradient(#f7931a 0 42%, #ffd08a 42% 68%, #d79a4a 68% 84%, #8496ab 84% 93%, #34465a 93% 100%); }
+    .legend-row:nth-child(2) .legend-dot { background: #ffd08a; }
+    .legend-row:nth-child(3) .legend-dot { background: #d79a4a; }
+    .legend-row:nth-child(4) .legend-dot { background: #8496ab; }
+    .legend-row:nth-child(5) .legend-dot { background: #34465a; }
+    .filter-chip { border-color: #2a3d53; color: #adbdcf; background: #0e1d32; }
+    .filter-chip.active { border-color: #5b4021; color: #ffd08a; background: #211e1b; }
+    .see-all { color: #ffad47; }
+    .table-head { border-color: #243850; color: #9aabc0; background: #11223a; }
+    .asset-row, .activity-row { border-color: #243850; }
+    .coin-icon.btc { color: #071426; background: #f7931a; }
+    .coin-icon.eth { background: #667597; }
+    .coin-icon.sol { background: #29364d; }
+    .coin-icon.usdc { background: #3976ba; }
+    .coin-icon.ada { background: #355f9d; }
+    .positive { color: #8ed3aa; }
+    .negative { color: #f0958d; }
+    .activity-icon { border-color: #2a3d53; color: #ffbd6a; background: #12233a; }
+    .market-note { border-color: #354154; color: #b8c5d4; background: #142238; }
+    .market-note strong, .market-note svg { color: #ffbd6a; }
+    .preorder-card { border-color: #354154; background: linear-gradient(125deg, #17263a, #0e1d32 70%); }
+    .preorder-kicker { color: #ffbd6a; }
+    .preorder-copy { color: #adbdcf; }
+    .preorder-field { color: #c4d0df; }
+    .preorder-field input, .auth-field input { border-color: #354860; color: #edf3fb; background: #091a30; }
+    .preorder-field input:focus, .auth-field input:focus { border-color: #e99432; box-shadow: 0 0 0 3px rgba(247, 147, 26, .17); }
+    .preorder-status { color: #a5b5c8; }
+    .preorder-status[data-state="error"], .auth-error { color: #ff9b92; }
+    .preorder-remove, .auth-switch { color: #ffbd6a; }
+    .toast { border-color: #34465c; color: #edf3fb; background: #12233a; }
+    .modal-backdrop { background: rgba(2, 8, 18, .75); }
+    .modal { border-color: #2a3d53; background: #0e1d32; }
+    .modal-close { border-color: #354860; color: #c4d0df; background: #12233a; }
+    .modal-copy { color: #adbdcf; }
+    .demo-notice { border-color: #354860; color: #d3dfed; background: #14263d; }
+    .auth-field { color: #c4d0df; }
+    .notification-bell-count { position: absolute; top: -5px; right: -6px; display: grid; min-width: 16px; height: 16px; place-items: center; padding: 0 4px; border: 2px solid #102039; border-radius: 9px; color: #071426; background: #f7931a; font-size: 8px; font-weight: 800; line-height: 1; }
+    .notification-bell-count[hidden] { display: none; }
+    .notification-view { max-width: 1120px; }
+    .notification-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 0 0 20px; }
+    .notification-heading h1 { font: 700 27px Manrope, sans-serif; letter-spacing: -1.15px; }
+    .notification-heading p { margin: 7px 0 0; color: #a5b5c8; font-size: 11px; }
+    .notification-heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .notification-action { min-height: 35px; padding: 0 11px; border: 1px solid #354860; border-radius: 8px; color: #d3dfed; background: #12233a; cursor: pointer; font-size: 10px; font-weight: 600; transition: .16s; }
+    .notification-action:hover { border-color: #80602e; color: #ffd08a; }
+    .notification-action.primary { border-color: #f7931a; color: #241606; background: #f7931a; }
+    .notification-action.primary:hover { background: #ffad47; }
+    .notification-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, .8fr); gap: 16px; align-items: start; }
+    .notification-feed, .notification-preferences { overflow: hidden; border: 1px solid #243850; border-radius: 14px; background: #0e1d32; box-shadow: 0 18px 54px rgba(0, 0, 0, .16); }
+    .notification-feed-head { padding: 20px 21px 0; }
+    .notification-feed-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .notification-feed-title h2, .notification-preferences h2 { margin: 0; color: #edf3fb; font: 700 13px Manrope, sans-serif; }
+    .notification-feed-count { color: #9aabc0; font-size: 9px; }
+    .notification-demo-note { margin-top: 8px; color: #9aabc0; font-size: 9px; line-height: 1.55; }
+    .notification-tabs { display: flex; gap: 5px; overflow-x: auto; margin-top: 17px; border-bottom: 1px solid #243850; scrollbar-width: thin; }
+    .notification-tab { position: relative; min-height: 36px; flex: 0 0 auto; padding: 0 9px; border: 0; color: #9aabc0; background: transparent; cursor: pointer; font-size: 9px; font-weight: 600; white-space: nowrap; }
+    .notification-tab:hover { color: #edf3fb; }
+    .notification-tab[aria-selected="true"] { color: #ffd08a; }
+    .notification-tab[aria-selected="true"]::after { position: absolute; right: 8px; bottom: -1px; left: 8px; height: 2px; border-radius: 2px; background: #f7931a; content: ""; }
+    .notification-status-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 12px 20px; border-bottom: 1px solid #243850; }
+    .notification-filter-label { margin-right: 2px; color: #9aabc0; font-size: 9px; }
+    .notification-filter { min-height: 25px; padding: 0 9px; border: 1px solid #34465c; border-radius: 7px; color: #adbdcf; background: #091a30; cursor: pointer; font-size: 9px; }
+    .notification-filter[aria-pressed="true"] { border-color: #5b4021; color: #ffd08a; background: #211e1b; }
+    .notification-list { display: grid; }
+    .notification-card { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 16px 20px; border-bottom: 1px solid #243850; transition: background .16s; }
+    .notification-card:last-child { border-bottom: 0; }
+    .notification-card[data-unread="true"] { background: rgba(247, 147, 26, .035); }
+    .notification-card-icon { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #354860; border-radius: 11px; color: #ffbd6a; background: #12233a; font-size: 15px; }
+    .notification-card[data-category="security"] .notification-card-icon { color: #91b9fb; }
+    .notification-card[data-category="transactions"] .notification-card-icon { color: #8ed3aa; }
+    .notification-card[data-category="market-updates"] .notification-card-icon { color: #c4a7f7; }
+    .notification-card-content { min-width: 0; }
+    .notification-card-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .notification-card-title { color: #edf3fb; font-size: 10px; font-weight: 700; line-height: 1.5; }
+    .notification-demo-tag { padding: 3px 5px; border: 1px solid #5b4021; border-radius: 5px; color: #ffd08a; background: #211e1b; font-size: 7px; font-weight: 800; letter-spacing: .7px; }
+    .notification-message { margin: 5px 0 7px; color: #aebdd0; font-size: 9px; line-height: 1.65; }
+    .notification-timestamp { color: #8193a9; font-size: 8px; }
+    .notification-status { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; color: #8ed3aa; font-size: 8px; font-weight: 700; }
+    .notification-status::before { width: 5px; height: 5px; border-radius: 50%; background: #8ed3aa; content: ""; }
+    .notification-mark-read { align-self: center; min-height: 28px; padding: 0 8px; border: 1px solid #354860; border-radius: 7px; color: #ffd08a; background: transparent; cursor: pointer; font-size: 8px; font-weight: 600; white-space: nowrap; }
+    .notification-mark-read:hover { border-color: #f7931a; background: #211e1b; }
+    .notification-empty { display: grid; min-height: 220px; place-content: center; padding: 24px; text-align: center; }
+    .notification-empty-icon { display: grid; width: 46px; height: 46px; place-items: center; margin: 0 auto 12px; border: 1px solid #34465c; border-radius: 15px; color: #ffbd6a; background: #12233a; font-size: 19px; }
+    .notification-empty-title { color: #edf3fb; font: 700 12px Manrope, sans-serif; }
+    .notification-empty-copy { max-width: 250px; margin-top: 6px; color: #9aabc0; font-size: 9px; line-height: 1.6; }
+    .notification-preferences { padding: 19px 19px 10px; }
+    .notification-preferences h2 { margin-bottom: 5px; }
+    .notification-preferences-intro { margin: 0 0 10px; color: #9aabc0; font-size: 9px; line-height: 1.6; }
+    .notification-preferences .setting-row { min-height: 57px; }
+    .notification-preferences .setting-row-title { font-size: 9px; }
+    .notification-preferences .setting-row-description { font-size: 8px; }
+    .notification-preferences .settings-notice { margin: 11px 0 9px; font-size: 9px; }
+    .clear-confirm-backdrop { position: fixed; inset: 0; z-index: 12; display: none; place-items: center; padding: 18px; background: rgba(2, 8, 18, .78); backdrop-filter: blur(3px); }
+    .clear-confirm-backdrop.open { display: grid; }
+    .clear-confirm { width: min(100%, 370px); padding: 22px; border: 1px solid #34465c; border-radius: 15px; background: #0e1d32; box-shadow: 0 24px 80px rgba(0, 0, 0, .38); }
+    .clear-confirm h2 { margin: 0; color: #edf3fb; font: 700 16px Manrope, sans-serif; }
+    .clear-confirm p { margin: 11px 0 19px; color: #adbdcf; font-size: 11px; line-height: 1.65; }
+    .clear-confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .clear-confirm-actions button { min-height: 36px; padding: 0 12px; border: 1px solid #354860; border-radius: 8px; color: #d3dfed; background: #12233a; cursor: pointer; font-size: 10px; font-weight: 600; }
+    .clear-confirm-actions .confirm-clear { border-color: #a4493f; color: #fff; background: #9d4038; }
+    .clear-confirm-actions .confirm-clear:hover { background: #b94d43; }
+    body[data-color-mode="light"] .notification-bell-count { border-color: #fff; color: #fff; background: #28694a; }
+    body[data-color-mode="light"] .notification-feed, body[data-color-mode="light"] .notification-preferences { border-color: #edf0ed; background: #fff; box-shadow: 0 18px 54px rgba(27, 51, 39, .055); }
+    body[data-color-mode="light"] .notification-action { border-color: #e4eae4; color: #526057; background: #fff; }
+    body[data-color-mode="light"] .notification-action:hover { border-color: #cbdcc9; color: #28694a; }
+    body[data-color-mode="light"] .notification-action.primary { border-color: #28694a; color: #fff; background: #28694a; }
+    body[data-color-mode="light"] .notification-heading p, body[data-color-mode="light"] .notification-feed-count, body[data-color-mode="light"] .notification-demo-note, body[data-color-mode="light"] .notification-filter-label, body[data-color-mode="light"] .notification-preferences-intro { color: #849087; }
+    body[data-color-mode="light"] .notification-feed-title h2, body[data-color-mode="light"] .notification-preferences h2, body[data-color-mode="light"] .notification-card-title, body[data-color-mode="light"] .notification-empty-title { color: #15221d; }
+    body[data-color-mode="light"] .notification-tabs, body[data-color-mode="light"] .notification-status-filters, body[data-color-mode="light"] .notification-card { border-color: #edf0ed; }
+    body[data-color-mode="light"] .notification-tab { color: #78847c; }
+    body[data-color-mode="light"] .notification-tab[aria-selected="true"] { color: #28694a; }
+    body[data-color-mode="light"] .notification-tab[aria-selected="true"]::after { background: #28694a; }
+    body[data-color-mode="light"] .notification-filter { border-color: #e4eae4; color: #66736a; background: #fff; }
+    body[data-color-mode="light"] .notification-filter[aria-pressed="true"] { border-color: #cbdcc9; color: #28694a; background: #eff7ee; }
+    body[data-color-mode="light"] .notification-card[data-unread="true"] { background: #fbfdf9; }
+    body[data-color-mode="light"] .notification-card-icon { border-color: #e5ebe5; color: #a56716; background: #fff9ee; }
+    body[data-color-mode="light"] .notification-message { color: #657168; }
+    body[data-color-mode="light"] .notification-timestamp { color: #849087; }
+    body[data-color-mode="light"] .notification-demo-tag { border-color: #eddfc8; color: #865b1b; background: #fff8eb; }
+    body[data-color-mode="light"] .notification-mark-read { border-color: #dce7d9; color: #28694a; background: #fff; }
+    body[data-color-mode="light"] .notification-mark-read:hover { border-color: #28694a; background: #eff7ee; }
+    body[data-color-mode="light"] .notification-empty-icon { border-color: #e5ebe5; color: #528b61; background: #f7faf6; }
+    body[data-color-mode="light"] .clear-confirm { border-color: #e3e9e3; background: #fff; }
+    body[data-color-mode="light"] .clear-confirm h2 { color: #15221d; }
+    body[data-color-mode="light"] .clear-confirm p { color: #657168; }
+    body[data-color-mode="light"] .clear-confirm-actions button { border-color: #e4eae4; color: #33443a; background: #fff; }
+    body[data-accent="blue"] .notification-tab[aria-selected="true"] { color: #b8d7ff; }
+    body[data-accent="blue"] .notification-tab[aria-selected="true"]::after { background: #4d96fa; }
+    body[data-accent="blue"] .notification-bell-count { color: #071426; background: #4d96fa; }
+    body[data-accent="blue"] .notification-action.primary { border-color: #4d96fa; color: #071426; background: #4d96fa; }
+    body[data-accent="blue"] .notification-mark-read { color: #b8d7ff; }
+    body[data-accent="blue"][data-color-mode="light"] .notification-tab[aria-selected="true"] { color: #285b95; }
+    body[data-accent="blue"][data-color-mode="light"] .notification-tab[aria-selected="true"]::after { background: #3976c5; }
+    body[data-accent="blue"][data-color-mode="light"] .notification-bell-count { color: #fff; background: #3976c5; }
+    @media (max-width: 850px) {
+      .notification-layout { grid-template-columns: minmax(0, 1fr); }
+      .notification-preferences { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; }
+      .notification-preferences h2, .notification-preferences-intro, .notification-preferences .settings-notice { grid-column: 1 / -1; }
+    }
+    @media (max-width: 580px) {
+      .notification-heading { align-items: flex-start; flex-direction: column; }
+      .notification-heading h1 { font-size: 24px; }
+      .notification-heading-actions { width: 100%; }
+      .notification-action { flex: 1; }
+      .notification-feed-head { padding: 16px 13px 0; }
+      .notification-tabs { gap: 2px; margin-top: 13px; }
+      .notification-tab { padding: 0 7px; font-size: 8px; }
+      .notification-status-filters { padding: 10px 13px; }
+      .notification-card { grid-template-columns: 31px minmax(0, 1fr); gap: 9px; padding: 13px; }
+      .notification-card-icon { width: 31px; height: 31px; font-size: 13px; }
+      .notification-mark-read { grid-column: 2; justify-self: start; }
+      .notification-preferences { grid-template-columns: 1fr; padding: 16px 14px 8px; }
+      .notification-preferences h2, .notification-preferences-intro, .notification-preferences .settings-notice { grid-column: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .notification-card, .notification-tab, .notification-action { transition: none; }
+    }
+    @media (max-width: 580px) {
+      .sidebar { inset: auto 0 0; }
+    }
+  </style>
+</head>
+<body data-color-mode="dark" data-accent="yellow">
+  <div class="ticker-bar" role="region" aria-label="Bitcoin price demo ticker">
+    <div class="ticker-label"><span>₿</span> MARKET DEMO</div>
+    <div class="ticker-window">
+      <div class="ticker-track">
+        <div class="ticker-group" aria-hidden="true">
+          <div class="ticker-item"><span class="ticker-symbol">₿</span><strong>BITCOIN</strong><span>BTC / USD</span><strong>$67,432.10</strong><span class="ticker-positive">+2.41%</span></div>
+          <div class="ticker-item"><span>SIMULATED PRICE</span><strong>NOT LIVE MARKET DATA</strong></div>
+          <div class="ticker-item"><span class="ticker-symbol">₿</span><strong>BITCOIN</strong><span>BTC / USD</span><strong>$67,432.10</strong><span class="ticker-positive">+2.41%</span></div>
+          <div class="ticker-item"><span>SIMULATED PRICE</span><strong>NOT LIVE MARKET DATA</strong></div>
+        </div>
+        <div class="ticker-group" aria-hidden="true">
+          <div class="ticker-item"><span class="ticker-symbol">₿</span><strong>BITCOIN</strong><span>BTC / USD</span><strong>$67,432.10</strong><span class="ticker-positive">+2.41%</span></div>
+          <div class="ticker-item"><span>SIMULATED PRICE</span><strong>NOT LIVE MARKET DATA</strong></div>
+          <div class="ticker-item"><span class="ticker-symbol">₿</span><strong>BITCOIN</strong><span>BTC / USD</span><strong>$67,432.10</strong><span class="ticker-positive">+2.41%</span></div>
+          <div class="ticker-item"><span>SIMULATED PRICE</span><strong>NOT LIVE MARKET DATA</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5c4.7 3.3 7 6.2 7 9.1a7 7 0 1 1-14 0c0-2.9 2.3-5.8 7-9.1Z" stroke="currentColor" stroke-width="1.8"/><path d="M8.8 14.7c.4 1.3 1.5 2 3.2 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+        <span class="brand-word">luma</span>
+      </div>
+      <div class="side-label">Workspace</div>
+      <nav class="nav-list" aria-label="Workspace">
+        <button class="nav-item active" data-page="Overview" aria-label="Overview" aria-current="page"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="11.5" width="7" height="9" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/></svg><span>Overview</span></button>
+        <button class="nav-item" data-page="Portfolio" aria-label="Portfolio"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m7 15 4-4 3 2 5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Portfolio</span></button>
+        <button class="nav-item" data-page="Activity" aria-label="Activity"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h4l2.3-6 4.1 12 2.1-6H20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Activity</span></button>
+        <button class="nav-item" data-page="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none"><path d="M18 9a6 6 0 0 0-12 0c0 7-2.2 7-2.2 8.5h16.4C20.2 16 18 16 18 9ZM10 20h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Notifications</span></button>
+        <button class="nav-item" data-page="Explore" aria-label="Explore"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="m15.4 8.6-2.2 4.6-4.6 2.2 2.2-4.6 4.6-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Explore</span><span class="nav-badge">NEW</span></button>
+        <button class="nav-item" data-page="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="m19.4 15 .1.1 1.1.9-1 1.8-1.4-.5a7.8 7.8 0 0 1-1.5.9l-.3 1.5h-2.1l-.4-1.5a7.8 7.8 0 0 1-1.7 0l-.8 1.3-1.9-.9.3-1.5a7 7 0 0 1-1.1-1.2l-1.5.1-.7-2 1.3-.8a7.8 7.8 0 0 1 0-1.7l-1.3-.8.7-2 1.5.1a7 7 0 0 1 1.1-1.2l-.3-1.5 1.9-.9.8 1.3a7.8 7.8 0 0 1 1.7 0l.4-1.5h2.1l.3 1.5a7.8 7.8 0 0 1 1.5.9l1.4-.5 1 1.8-1.1.9a8 8 0 0 1 0 1.8l1.1 1-.8 1.9-1.4-.2Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg><span>Settings</span></button>
+      </nav>
+      <div class="side-bottom">
+        <div class="promo"><div class="promo-orb"></div><div class="promo-title">A little more clarity</div><div class="promo-copy">Small steps can make a big difference to your financial confidence.</div><button class="learn-link" data-action="Learn more">Explore our guide ↗</button></div>
+        <div class="profile"><img class="avatar avatar-photo" src="img.jpeg" alt="Profile picture"><div><div class="profile-name" id="profile-name">Guest</div><div class="profile-plan" id="profile-plan">Not signed in</div></div><button class="profile-more" aria-label="Profile options">···</button></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div class="breadcrumb">Workspace&nbsp; / &nbsp;<strong id="breadcrumb-page">Overview</strong></div>
+        <div class="top-actions">
+          <button class="icon-button" data-action="Help" aria-label="Help and support"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.7 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.3 2-2.3 3.5M12 16.8v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+          <button class="icon-button" id="notification-bell" type="button" aria-label="Notifications" aria-controls="notifications-view"><svg viewBox="0 0 24 24" fill="none"><path d="M18 9a6 6 0 0 0-12 0c0 7-2.2 7-2.2 8.5h16.4C20.2 16 18 16 18 9ZM10 20h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="notification-bell-count" id="notification-bell-count" aria-hidden="true"></span></button>
+          <button class="account-button" id="account-button" type="button">Create account</button>
+          <button class="add-wallet" data-action="Add a wallet">+ &nbsp;Add a wallet</button>
+        </div>
+      </header>
+
+      <section class="page-heading" id="overview-heading">
+        <div><div class="eyebrow">Live demo · Simulated movement</div><h1>Your overview</h1><div class="date-label">A visual preview — no wallet is connected.</div></div>
+        <div class="period-picker" aria-label="Chart time period">
+          <button class="period-button" data-period="1D">1D</button><button class="period-button active" data-period="1W">1W</button><button class="period-button" data-period="1M">1M</button><button class="period-button" data-period="1Y">1Y</button><button class="period-button" data-period="ALL">ALL</button>
+        </div>
+      </section>
+
+      <section class="overview-grid" id="overview-summary" aria-label="Portfolio summary">
+        <article class="card balance-card">
+          <div class="card-topline"><div class="card-label">Total portfolio value</div><button class="visibility-button" id="visibility-toggle" aria-label="Hide portfolio balance" aria-pressed="false"><svg id="visibility-icon" viewBox="0 0 24 24" fill="none"><path d="M3 12s3.3-6 9-6 9 6 9 6-3.3 6-9 6-9-6-9-6Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
+          <div class="balance-value" id="balance-value" aria-live="off"><span id="balance-amount">$24,680.52</span><span class="currency">USD</span></div>
+          <div class="balance-change">↗ &nbsp;+$1,284.32 (5.49%) <span>past week</span></div>
+          <div class="chart-wrap">
+            <svg viewBox="0 0 700 150" preserveAspectRatio="none" role="img" aria-label="Portfolio value trend rising over the past week">
+              <defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#f7931a" stop-opacity=".24"/><stop offset="100%" stop-color="#f7931a" stop-opacity="0"/></linearGradient></defs>
+              <path class="chart-grid" d="M0 119H700M0 82H700M0 45H700M0 8H700" stroke="#34465c" stroke-width="1" stroke-dasharray="3 5"/>
+              <path id="chart-area" d="M0 116 C28 108 36 112 57 101 S91 94 113 100 S145 85 168 88 S202 79 225 84 S259 71 280 77 S311 64 337 70 S365 56 391 64 S422 49 445 55 S476 59 499 46 S527 41 553 49 S579 30 602 37 S632 25 650 31 S678 17 700 12 L700 150 L0 150Z" fill="url(#chart-fill)"/>
+              <path id="chart-line" d="M0 116 C28 108 36 112 57 101 S91 94 113 100 S145 85 168 88 S202 79 225 84 S259 71 280 77 S311 64 337 70 S365 56 391 64 S422 49 445 55 S476 59 499 46 S527 41 553 49 S579 30 602 37 S632 25 650 31 S678 17 700 12" fill="none" stroke="#f7931a" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+              <circle id="chart-point" cx="700" cy="12" r="4.5" fill="#0e1d32" stroke="#f7931a" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </div>
+          <div class="chart-labels" id="chart-labels"><span>Oct 19</span><span>Oct 20</span><span>Oct 21</span><span>Oct 22</span><span>Oct 23</span><span>Oct 24</span><span>Oct 25</span></div>
+        </article>
+        <article class="card summary-card">
+          <div><div class="summary-title">Asset allocation</div><div class="summary-subtitle">Your portfolio at a glance</div></div>
+          <div class="allocation"><div class="donut" role="img" aria-label="Portfolio allocation: Bitcoin 42 percent, Ethereum 26 percent, Solana 16 percent, USDC 9 percent, other 7 percent"><div class="donut-inner"><div class="donut-total">$24.6k</div><div class="donut-label">5 assets</div></div></div></div>
+          <div class="legend"><div class="legend-row"><span class="legend-dot"></span>Bitcoin <span class="legend-percent">42%</span></div><div class="legend-row"><span class="legend-dot"></span>Ethereum <span class="legend-percent">26%</span></div><div class="legend-row"><span class="legend-dot"></span>Solana <span class="legend-percent">16%</span></div><div class="legend-row"><span class="legend-dot"></span>USDC <span class="legend-percent">9%</span></div><div class="legend-row"><span class="legend-dot"></span>Other <span class="legend-percent">7%</span></div></div>
+        </article>
+      </section>
+
+      <section class="card preorder-card" id="preorder-card" aria-labelledby="preorder-title">
+        <div>
+          <div class="preorder-kicker">Coming soon · Early access</div>
+          <h2 class="preorder-title" id="preorder-title">Interested in the upcoming token?</h2>
+          <p class="preorder-copy">Join the pre-order interest list and be notified when more details are available. This is not a token purchase or reservation.</p>
+        </div>
+        <form class="preorder-form" id="preorder-form">
+          <label class="preorder-field" for="preorder-name">Name
+            <input id="preorder-name" name="name" type="text" autocomplete="name" maxlength="100" required>
+          </label>
+          <label class="preorder-field" for="preorder-email">Email
+            <input id="preorder-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+          </label>
+          <button class="preorder-submit" id="preorder-submit" type="submit">Save my interest</button>
+          <p class="preorder-status" id="preorder-status" role="status" aria-live="polite">Demo only: your details stay in this browser and are not sent to a server.</p>
+          <button class="preorder-remove" id="preorder-remove" type="button" hidden>Remove saved details from this browser</button>
+        </form>
+      </section>
+
+      <section class="content-grid" id="overview-details">
+        <article class="card assets-card">
+          <div class="section-head"><div><div class="section-title">Your assets</div><div class="section-subtitle">A little snapshot of what you hold</div></div><button class="see-all" data-action="View all assets">View all &nbsp;↗</button></div>
+          <div class="asset-filters" aria-label="Filter assets"><button class="filter-chip active" data-filter="all">All assets</button><button class="filter-chip" data-filter="gainers">Gainers</button><button class="filter-chip" data-filter="losers">Losers</button></div>
+          <div class="table-head"><span>Asset</span><span>Price</span><span>Holdings</span><span>24h</span></div>
+          <div id="asset-rows">
+            <div class="asset-row" data-change="positive"><div class="asset-name"><div class="coin-icon btc">₿</div><div><div class="coin-title">Bitcoin</div><div class="coin-ticker">BTC</div></div></div><div class="asset-numeric">$67,432.10</div><div class="asset-numeric">$10,365<div class="asset-units">0.1537 BTC</div></div><div class="positive">+2.41%</div></div>
+            <div class="asset-row" data-change="positive"><div class="asset-name"><div class="coin-icon eth">◆</div><div><div class="coin-title">Ethereum</div><div class="coin-ticker">ETH</div></div></div><div class="asset-numeric">$3,521.84</div><div class="asset-numeric">$6,414<div class="asset-units">1.8211 ETH</div></div><div class="positive">+1.86%</div></div>
+            <div class="asset-row" data-change="positive"><div class="asset-name"><div class="coin-icon sol">◎</div><div><div class="coin-title">Solana</div><div class="coin-ticker">SOL</div></div></div><div class="asset-numeric">$178.92</div><div class="asset-numeric">$3,946<div class="asset-units">22.056 SOL</div></div><div class="positive">+4.32%</div></div>
+            <div class="asset-row" data-change="negative"><div class="asset-name"><div class="coin-icon usdc">●</div><div><div class="coin-title">USD Coin</div><div class="coin-ticker">USDC</div></div></div><div class="asset-numeric">$1.00</div><div class="asset-numeric">$2,221<div class="asset-units">2,221.00 USDC</div></div><div class="negative">−0.02%</div></div>
+            <div class="asset-row" data-change="positive"><div class="asset-name"><div class="coin-icon ada">₳</div><div><div class="coin-title">Cardano</div><div class="coin-ticker">ADA</div></div></div><div class="asset-numeric">$0.84</div><div class="asset-numeric">$1,734<div class="asset-units">2,064.29 ADA</div></div><div class="positive">+0.78%</div></div>
+          </div>
+        </article>
+
+        <div>
+          <article class="card activity-card">
+            <div class="section-head"><div><div class="section-title">Recent activity</div><div class="section-subtitle">Your latest moves</div></div><button class="see-all" data-action="View all activity">View all &nbsp;↗</button></div>
+            <div class="activity-list">
+              <div class="activity-row"><div class="activity-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v15m0 0-6-6m6 6 6-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="activity-main"><div class="activity-name">Received Bitcoin</div><div class="activity-date">Today, 10:42 AM</div></div><div class="activity-amount">+0.024 BTC<small>+$1,618.37</small></div></div>
+              <div class="activity-row"><div class="activity-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20V5m0 0 6 6m-6-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="activity-main"><div class="activity-name">Sent Ethereum</div><div class="activity-date">Yesterday, 4:18 PM</div></div><div class="activity-amount">−0.15 ETH<small>−$528.28</small></div></div>
+              <div class="activity-row"><div class="activity-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8h15m0 0-4-4m4 4-4 4M20 16H5m0 0 4 4m-4-4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="activity-main"><div class="activity-name">Swapped USDC → SOL</div><div class="activity-date">Oct 23, 2026</div></div><div class="activity-amount">12.5 SOL<small>$2,236.50</small></div></div>
+            </div>
+          </article>
+          <div class="market-note"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5 21 20H3l9-16.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v4m0 3v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span><strong>A gentle reminder:</strong> crypto prices can go up and down. Only invest what you can afford to lose.</span></div>
+        </div>
+      </section>
+
+      <section class="settings-view" id="settings-view" hidden aria-labelledby="settings-title">
+        <div class="settings-heading">
+          <div><div class="eyebrow">Personalize your workspace</div><h1 id="settings-title" tabindex="-1">Settings</h1><p>Manage your profile, preferences, and account security.</p></div>
+        </div>
+        <div class="settings-layout">
+          <nav class="settings-categories" aria-label="Settings categories" role="tablist" aria-orientation="vertical">
+            <div class="settings-categories-label">Preferences</div>
+            <button class="settings-category" type="button" role="tab" aria-selected="true" data-setting-tab="profile"><span class="settings-category-icon">👤</span>My Profile</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="security"><span class="settings-category-icon">🔐</span>Security</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="notifications"><span class="settings-category-icon">🔔</span>Notifications</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="appearance"><span class="settings-category-icon">🎨</span>Appearance</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="currency"><span class="settings-category-icon">💱</span>Currency</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="payments"><span class="settings-category-icon">💳</span>Payment Methods</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="language"><span class="settings-category-icon">🌍</span>Language</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="trading"><span class="settings-category-icon">📈</span>Trading Preferences</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="privacy"><span class="settings-category-icon">🔒</span>Privacy</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="verification"><span class="settings-category-icon">🛡️</span>Verification</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="devices"><span class="settings-category-icon">📱</span>Connected Devices</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="help"><span class="settings-category-icon">❓</span>Help &amp; Support</button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-setting-tab="account"><span class="settings-category-icon">🚪</span>Account</button>
+          </nav>
+
+          <article class="settings-panel">
+            <section class="settings-pane" id="settings-profile" role="tabpanel">
+              <header class="settings-panel-head"><h2>My Profile</h2><p>Update the details shown on your account.</p></header>
+              <div class="settings-panel-content">
+                <div class="profile-editor">
+                  <img class="avatar avatar-photo" id="settings-avatar" src="img.jpeg" alt="Roger Moles profile picture">
+                  <div><div class="profile-editor-title">Profile picture</div><div class="profile-editor-copy">Choose a JPG, PNG, or WebP image up to 5 MB.</div><label class="file-picker">Upload photo<input id="profile-photo-input" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
+                </div>
+                <div class="settings-fields">
+                  <label class="settings-field" for="settings-full-name">Full name<input id="settings-full-name" type="text" autocomplete="name" maxlength="100" required value="Roger Moles"></label>
+                  <label class="settings-field" for="settings-email">Email address<input id="settings-email" type="email" autocomplete="email" maxlength="254" required value="roger.moles@example.com"></label>
+                  <label class="settings-field" for="settings-username">Username<input id="settings-username" type="text" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9._]+" value="roger.moles"></label>
+                </div>
+                <div class="settings-notice">Profile details are editable in this demo. <strong>Changes are not sent to a server.</strong></div>
+                <div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save changes</button></div>
+              </div>
+            </section>
+
+            <section class="settings-pane" id="settings-security" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Security</h2><p>Keep your account protected and review sign-in activity.</p></header>
+              <div class="settings-panel-content">
+                <div class="settings-section-title">Change password</div>
+                <div class="settings-fields">
+                  <label class="settings-field" for="current-password">Current password<input id="current-password" type="password" autocomplete="current-password" placeholder="Enter current password"></label>
+                  <label class="settings-field" for="new-password">New password<input id="new-password" type="password" autocomplete="new-password" minlength="12" placeholder="At least 12 characters"></label>
+                </div>
+                <div class="settings-actions"><button class="settings-save" type="button" data-demo-action="Password updates are not connected in this demo.">Update password</button></div>
+                <div class="settings-section-title">Sign-in protection</div>
+                <div class="settings-rows">
+                  <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Two-factor authentication</div><div class="setting-row-description">Add a second step when signing in.</div></div><label class="switch-control"><input type="checkbox" aria-label="Enable two-factor authentication"><span class="switch-track"></span></label></div>
+                  <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Login notifications</div><div class="setting-row-description">Get notified when a new sign-in is detected.</div></div><label class="switch-control"><input type="checkbox" checked aria-label="Enable login notifications"><span class="switch-track"></span></label></div>
+                </div>
+                <div class="settings-notice"><strong>Demo only:</strong> password changes and two-factor authentication are not connected to an account service.</div>
+              </div>
+            </section>
+
+            <section class="settings-pane" id="settings-notifications" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Notifications</h2><p>Choose which updates you would like to see.</p></header>
+              <div class="settings-panel-content"><div class="settings-rows">
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Price alerts</div><div class="setting-row-description">Updates when an asset reaches your alert price.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="priceAlerts" aria-label="Enable price alerts"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Market news</div><div class="setting-row-description">Product updates and notable market headlines.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="marketNews" aria-label="Enable market news"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Transaction updates</div><div class="setting-row-description">Demo transaction feature announcements.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="transactionUpdates" aria-label="Enable transaction updates"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Security notifications</div><div class="setting-row-description">Security tips and account safety guidance.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="securityNotifications" aria-label="Enable security notifications"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Sign-in notifications</div><div class="setting-row-description">Demo account safety reminders, not sign-in activity.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="securityNotifications" aria-label="Enable sign-in notifications"><span class="switch-track"></span></label></div>
+              </div><div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save preferences</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-appearance" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Appearance</h2><p>Choose how Luma looks on this device.</p></header>
+              <div class="settings-panel-content">
+                <div class="settings-section-title">Color mode</div>
+                <div class="choice-group" aria-label="Color mode"><button class="choice-button theme-choice" type="button" data-color-mode-choice="dark" aria-pressed="true"><span class="theme-swatch"></span>Dark mode</button><button class="choice-button theme-choice" type="button" data-color-mode-choice="light" aria-pressed="false"><span class="theme-swatch light"></span>Light mode</button></div>
+                <div class="settings-section-title">Accent theme</div>
+                <div class="choice-group" aria-label="Accent theme"><button class="choice-button theme-choice" type="button" data-accent-choice="blue" aria-pressed="false"><span class="theme-swatch blue"></span>Blue theme</button><button class="choice-button theme-choice" type="button" data-accent-choice="yellow" aria-pressed="true"><span class="theme-swatch yellow"></span>Yellow theme</button></div>
+                <div class="settings-notice">Theme changes apply immediately in this browser preview.</div>
+              </div>
+            </section>
+
+            <section class="settings-pane" id="settings-currency" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Currency</h2><p>Select the currency you prefer for viewing amounts.</p></header>
+              <div class="settings-panel-content"><label class="settings-field" for="settings-currency-select">Display currency<select id="settings-currency-select"><option value="USD">USD — US Dollar</option><option value="NGN">NGN — Nigerian Naira</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option></select></label><div class="settings-notice">Currency selection is a display preference in this demo; sample asset prices are not converted.</div><div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save preference</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-payments" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Payment Methods</h2><p>Choose the methods you would like to use for deposits, withdrawals, and account funding.</p></header>
+              <div class="settings-panel-content">
+                <div class="payment-grid" aria-label="Available payment methods">
+                  <button class="payment-method" type="button" data-payment-method="bitcoin" aria-pressed="true">
+                    <span class="payment-method-icon">₿</span>
+                    <span class="label">Bitcoin</span>
+                    <span class="meta">BTC wallet transfers and on-chain deposits.</span>
+                    <span class="tag">Popular</span>
+                  </button>
+                  <button class="payment-method" type="button" data-payment-method="paypal" aria-pressed="false">
+                    <span class="payment-method-icon">P</span>
+                    <span class="label">PayPal</span>
+                    <span class="meta">Fast digital wallet funding and payout support.</span>
+                    <span class="tag">Online</span>
+                  </button>
+                  <button class="payment-method" type="button" data-payment-method="bank" aria-pressed="false">
+                    <span class="payment-method-icon">🏦</span>
+                    <span class="label">Bank Transfer</span>
+                    <span class="meta">Traditional bank-to-wallet funding.</span>
+                    <span class="tag">Classic</span>
+                  </button>
+                </div>
+                <div class="settings-notice"><strong>Demo mode:</strong> payment methods are selected in this browser only and are not connected to a real provider or bank account.</div>
+                <div class="settings-actions"><button class="settings-save" type="button" data-save-payment-method>Save payment method</button></div>
+              </div>
+            </section>
+
+            <section class="settings-pane" id="settings-language" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Language</h2><p>Choose your preferred language for the interface.</p></header>
+              <div class="settings-panel-content"><label class="settings-field" for="settings-language-select">Display language<select id="settings-language-select"><option>English</option><option>French</option><option>Spanish</option><option>Portuguese</option><option>Hausa</option><option>Yoruba</option><option>Arabic</option></select></label><div class="settings-notice">Only English is currently available in this preview. Other language choices are saved as preferences only.</div><div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save preference</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-trading" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Trading Preferences</h2><p>Set your default chart timeframe and favorite market pairs.</p></header>
+              <div class="settings-panel-content"><div class="settings-fields">
+                <label class="settings-field" for="settings-timeframe">Default chart timeframe<select id="settings-timeframe"><option>1 hour</option><option selected>1 day</option><option>1 week</option><option>1 month</option></select></label>
+                <label class="settings-field" for="settings-pair">Preferred trading pair<select id="settings-pair"><option>BTC / USD</option><option>ETH / USD</option><option>SOL / USD</option><option>BTC / NGN</option><option>ETH / EUR</option></select></label>
+              </div><div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save preferences</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-privacy" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Privacy</h2><p>Control how your account details appear in this demo.</p></header>
+              <div class="settings-panel-content"><div class="settings-rows">
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Private account</div><div class="setting-row-description">Keep your portfolio visibility limited to you.</div></div><label class="switch-control"><input type="checkbox" checked aria-label="Keep account private"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Hide balances by default</div><div class="setting-row-description">Mask portfolio balances when opening the dashboard.</div></div><label class="switch-control"><input type="checkbox" aria-label="Hide balances by default"><span class="switch-track"></span></label></div>
+                <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Personalized product insights</div><div class="setting-row-description">Use activity in this demo to tailor the experience.</div></div><label class="switch-control"><input type="checkbox" aria-label="Enable personalized product insights"><span class="switch-track"></span></label></div>
+              </div><div class="settings-actions"><button class="settings-save" type="button" data-save-settings>Save preferences</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-verification" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Verification</h2><p>Review identity verification status for this account.</p></header>
+              <div class="settings-panel-content"><div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Identity verification</div><div class="setting-row-description">Verification is not available in this preview.</div></div><span class="device-current">Not verified</span></div><div class="settings-notice"><strong>Your information stays private.</strong> This demo does not collect identity documents or verification data.</div><div class="settings-actions"><button class="settings-save" type="button" data-demo-action="Identity verification is not available in this demo.">View verification options</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-devices" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Connected Devices</h2><p>Review devices with recent account activity.</p></header>
+              <div class="settings-panel-content"><div class="settings-device"><div class="device-icon">▣</div><div class="device-info"><div class="device-name">This browser</div><div class="device-meta">Current session · Device details unavailable</div></div><span class="device-current">Current</span></div><div class="settings-device"><div class="device-icon">▱</div><div class="device-info"><div class="device-name">Other sessions</div><div class="device-meta">No connected device data in this preview.</div></div></div><div class="settings-notice">Sessions shown here are sample interface content, not active account sessions.</div><div class="settings-actions"><button class="text-button" type="button" data-demo-action="Device session management is not connected in this demo.">Sign out other sessions</button></div></div>
+            </section>
+
+            <section class="settings-pane" id="settings-help" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Help &amp; Support</h2><p>Find answers or contact us about an issue or complaint.</p></header>
+              <div class="settings-panel-content">
+                <details class="settings-faq"><summary>Is this a real crypto wallet?</summary><p>No. This is a website preview with sample portfolio data. It cannot connect to a wallet or make transactions.</p></details>
+                <details class="settings-faq"><summary>How can I contact support or make a complaint?</summary><p>Email <a href="mailto:lunacrypto335@gmail.com?subject=Luma%20support%20request">lunacrypto335@gmail.com</a> with details about the issue or complaint. Never include your password, recovery phrase, or private keys.</p></details>
+                <details class="settings-faq"><summary>Where are my settings saved?</summary><p>Interactive preferences affect this page preview. Account settings are not sent to a server.</p></details>
+                <div class="settings-actions"><a class="settings-save" href="mailto:lunacrypto335@gmail.com?subject=Luma%20support%20request">Email support</a></div>
+              </div>
+            </section>
+
+            <section class="settings-pane" id="settings-account" role="tabpanel" hidden>
+              <header class="settings-panel-head"><h2>Account</h2><p>Account actions for your Luma profile.</p></header>
+              <div class="settings-panel-content"><div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Sign out</div><div class="setting-row-description">End your current account session on this device.</div></div><button class="text-button" id="settings-signout" type="button">Sign out</button></div><div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Delete account</div><div class="setting-row-description">Permanently remove your account and its associated data.</div></div><button class="danger-button" type="button" data-demo-action="Account deletion is not available in this demo. No account data has been changed.">Delete account</button></div><div class="settings-notice"><strong>Account deletion is unavailable here.</strong> This preview will not delete accounts or data.</div></div>
+            </section>
+          </article>
+        </div>
+      </section>
+
+      <section class="notifications-view" id="notifications-view" hidden aria-labelledby="notifications-title">
+        <div class="notification-heading">
+          <div><div class="eyebrow">Your updates · Demo data</div><h1 id="notifications-title" tabindex="-1">Notifications</h1><p>Stay up to date with sample Luma notifications. No real account activity is shown.</p></div>
+          <div class="notification-heading-actions">
+            <button class="notification-action primary" id="mark-all-read" type="button">Mark All as Read</button>
+            <button class="notification-action" id="clear-all-notifications" type="button">Clear All</button>
+          </div>
+        </div>
+        <div class="notification-layout">
+          <section class="notification-feed" aria-labelledby="notification-feed-title">
+            <div class="notification-feed-head">
+              <div class="notification-feed-title"><h2 id="notification-feed-title">Notification center</h2><span class="notification-feed-count" id="notification-feed-count"></span></div>
+              <p class="notification-demo-note">Illustrative demo items only—not real deposits, withdrawals, sign-ins, or live market alerts.</p>
+              <div class="notification-tabs" role="tablist" aria-label="Notification categories">
+                <button class="notification-tab" type="button" role="tab" aria-selected="true" data-notification-category="all">All</button>
+                <button class="notification-tab" type="button" role="tab" aria-selected="false" data-notification-category="unread">Unread</button>
+                <button class="notification-tab" type="button" role="tab" aria-selected="false" data-notification-category="transactions">Transactions</button>
+                <button class="notification-tab" type="button" role="tab" aria-selected="false" data-notification-category="price-alerts">Price Alerts</button>
+                <button class="notification-tab" type="button" role="tab" aria-selected="false" data-notification-category="security">Security</button>
+                <button class="notification-tab" type="button" role="tab" aria-selected="false" data-notification-category="market-updates">Market Updates</button>
+              </div>
+            </div>
+            <div class="notification-status-filters" role="group" aria-label="Filter notifications by read status">
+              <span class="notification-filter-label">Status</span>
+              <button class="notification-filter" type="button" aria-pressed="true" data-notification-status="all">All</button>
+              <button class="notification-filter" type="button" aria-pressed="false" data-notification-status="unread">Unread</button>
+              <button class="notification-filter" type="button" aria-pressed="false" data-notification-status="read">Read</button>
+            </div>
+            <div class="notification-list" id="notification-list" aria-live="polite"></div>
+          </section>
+
+          <section class="notification-preferences" aria-labelledby="notification-preferences-title">
+            <h2 id="notification-preferences-title">Notification preferences</h2>
+            <p class="notification-preferences-intro">Choose which kinds of updates you would like to receive.</p>
+            <div class="settings-rows">
+              <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Price alerts</div><div class="setting-row-description">Sample asset price notifications.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="priceAlerts" aria-label="Enable price alerts"><span class="switch-track"></span></label></div>
+              <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Market news</div><div class="setting-row-description">Demo market updates and product news.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="marketNews" aria-label="Enable market news"><span class="switch-track"></span></label></div>
+              <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Transaction updates</div><div class="setting-row-description">Demo transaction feature announcements.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="transactionUpdates" aria-label="Enable transaction updates"><span class="switch-track"></span></label></div>
+              <div class="setting-row"><div class="setting-row-copy"><div class="setting-row-title">Security notifications</div><div class="setting-row-description">Security tips and account safety guidance.</div></div><label class="switch-control"><input type="checkbox" data-notification-pref="securityNotifications" aria-label="Enable security notifications"><span class="switch-track"></span></label></div>
+            </div>
+            <div class="settings-notice"><strong>Saved in this browser.</strong> Preferences are not sent to a server.</div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="clear-confirm-backdrop" id="clear-confirm-backdrop">
+    <section class="clear-confirm" role="alertdialog" aria-modal="true" aria-labelledby="clear-confirm-title" aria-describedby="clear-confirm-copy">
+      <h2 id="clear-confirm-title">Clear all notifications?</h2>
+      <p id="clear-confirm-copy">This removes the demo notifications from this browser. This action cannot be undone.</p>
+      <div class="clear-confirm-actions"><button id="cancel-clear-notifications" type="button">Cancel</button><button class="confirm-clear" id="confirm-clear-notifications" type="button">Clear notifications</button></div>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="modal-backdrop" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-top"><div class="modal-title" id="modal-title">Wallet preview</div><button class="modal-close" id="modal-close" aria-label="Close dialog">×</button></div>
+      <p class="modal-copy" id="modal-copy">This is a visual demo. No wallet is connected and no transactions can be made.</p>
+      <form class="auth-form" id="auth-form" hidden>
+        <label class="auth-field" id="auth-name-field" for="auth-name">Full name
+          <input id="auth-name" name="name" type="text" autocomplete="name" maxlength="100" required>
+        </label>
+        <label class="auth-field" id="auth-email-field" for="auth-email">Email
+          <input id="auth-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </label>
+        <label class="auth-field" id="auth-phone-field" for="auth-phone">Phone number
+          <input id="auth-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" required>
+        </label>
+        <label class="auth-field" for="auth-password">Password
+          <input id="auth-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+        </label>
+        <p class="auth-error" id="auth-error" role="status" aria-live="polite"></p>
+        <button class="primary-button" id="auth-submit" type="submit">Create account</button>
+      </form>
+      <button class="auth-switch" id="auth-switch" type="button" hidden></button>
+      <div class="demo-notice">Your security matters. Never share your recovery phrase or private keys with anyone.</div>
+      <button class="primary-button" id="modal-done">Got it</button>
+    </section>
+  </div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    const notificationSeeds = [
+      {
+        id: "demo-price-alert-1",
+        category: "price-alerts",
+        icon: "↗",
+        title: "Sample price alert preview",
+        message: "This demo item shows where a price alert could appear. It is not based on a live price or a real alert.",
+        timestamp: "Demo sample · Today",
+        unread: true
+      },
+      {
+        id: "demo-market-update-1",
+        category: "market-updates",
+        icon: "◷",
+        title: "Sample market update",
+        message: "A market summary could appear here when Luma connects to a trusted data source. No live market data is shown.",
+        timestamp: "Demo sample · Today",
+        unread: true
+      },
+      {
+        id: "demo-transaction-update-1",
+        category: "transactions",
+        icon: "↔",
+        title: "Transaction updates preview",
+        message: "This is a preview of the notification category only. No deposits, withdrawals, or trades are recorded or confirmed.",
+        timestamp: "Demo sample · Preview",
+        unread: true
+      },
+      {
+        id: "demo-security-tip-1",
+        category: "security",
+        icon: "◇",
+        title: "General security tip",
+        message: "Use a strong, unique password and consider enabling two-factor authentication. This is general guidance, not an account alert.",
+        timestamp: "Demo sample · Preview",
+        unread: false
+      },
+      {
+        id: "demo-price-alert-2",
+        category: "price-alerts",
+        icon: "⌁",
+        title: "Price alerts are available to preview",
+        message: "Explore the notification preferences to choose whether sample price-alert previews are enabled.",
+        timestamp: "Demo sample · Preview",
+        unread: false
+      },
+      {
+        id: "demo-market-update-2",
+        category: "market-updates",
+        icon: "✦",
+        title: "Luma market updates preview",
+        message: "Market updates are illustrative in this demo and do not reflect current events or account activity.",
+        timestamp: "Demo sample · Preview",
+        unread: false
+      }
+    ];
+    const notificationStateKey = "luma-notification-state-v1";
+    const notificationPreferencesKey = "luma-notification-preferences-v1";
+    const defaultNotificationPreferences = {
+      priceAlerts: true,
+      marketNews: true,
+      transactionUpdates: true,
+      securityNotifications: true
+    };
+    const knownNotificationIds = new Set(notificationSeeds.map((item) => item.id));
+    let readNotificationIds = new Set(notificationSeeds.filter((item) => !item.unread).map((item) => item.id));
+    let notificationsCleared = false;
+    let notificationCategory = "all";
+    let notificationStatus = "all";
+    let notificationPreferences = { ...defaultNotificationPreferences };
+    let notificationStorageWarningShown = false;
+
+    function showNotificationStorageError(action, error) {
+      console.error(action, error);
+      if (!notificationStorageWarningShown) {
+        notificationStorageWarningShown = true;
+        showToast("Could not save notification settings in this browser.");
+      }
+    }
+
+    function loadNotificationState() {
+      try {
+        const saved = localStorage.getItem(notificationStateKey);
+        if (!saved) return;
+        const state = JSON.parse(saved);
+        if (!state || !Array.isArray(state.readIds) || typeof state.cleared !== "boolean"
+          || state.readIds.some((id) => typeof id !== "string" || !knownNotificationIds.has(id))) {
+          throw new Error("Saved notification state has an invalid format.");
+        }
+        readNotificationIds = new Set(state.readIds);
+        notificationsCleared = state.cleared;
+      } catch (error) {
+        showNotificationStorageError("Could not load saved notification state.", error);
+      }
+    }
+
+    function saveNotificationState() {
+      try {
+        localStorage.setItem(notificationStateKey, JSON.stringify({
+          readIds: [...readNotificationIds],
+          cleared: notificationsCleared
+        }));
+        return true;
+      } catch (error) {
+        showNotificationStorageError("Could not save notification state.", error);
+        return false;
+      }
+    }
+
+    function loadNotificationPreferences() {
+      try {
+        const saved = localStorage.getItem(notificationPreferencesKey);
+        if (!saved) return;
+        const preferences = JSON.parse(saved);
+        if (!preferences || Object.keys(defaultNotificationPreferences).some((key) => typeof preferences[key] !== "boolean")) {
+          throw new Error("Saved notification preferences have an invalid format.");
+        }
+        notificationPreferences = Object.fromEntries(
+          Object.keys(defaultNotificationPreferences).map((key) => [key, preferences[key]])
+        );
+      } catch (error) {
+        showNotificationStorageError("Could not load notification preferences.", error);
+      }
+    }
+
+    function saveNotificationPreferences() {
+      try {
+        localStorage.setItem(notificationPreferencesKey, JSON.stringify(notificationPreferences));
+        return true;
+      } catch (error) {
+        showNotificationStorageError("Could not save notification preferences.", error);
+        return false;
+      }
+    }
+
+    function syncNotificationPreferenceInputs() {
+      document.querySelectorAll("[data-notification-pref]").forEach((input) => {
+        input.checked = notificationPreferences[input.dataset.notificationPref];
+      });
+    }
+
+    function getVisibleNotifications() {
+      if (notificationsCleared) return [];
+      return notificationSeeds.filter((item) => {
+        const isRead = readNotificationIds.has(item.id);
+        const matchesCategory = notificationCategory === "all"
+          || (notificationCategory === "unread" && !isRead)
+          || item.category === notificationCategory;
+        const matchesStatus = notificationStatus === "all"
+          || (notificationStatus === "unread" && !isRead)
+          || (notificationStatus === "read" && isRead);
+        return matchesCategory && matchesStatus;
+      });
+    }
+
+    function updateNotificationCount() {
+      const unreadCount = notificationsCleared ? 0
+        : notificationSeeds.filter((item) => !readNotificationIds.has(item.id)).length;
+      const countBadge = document.getElementById("notification-bell-count");
+      const bell = document.getElementById("notification-bell");
+      countBadge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+      countBadge.hidden = unreadCount === 0;
+      bell.setAttribute("aria-label", unreadCount
+        ? `Notifications, ${unreadCount} unread`
+        : "Notifications, no unread items");
+      document.getElementById("notification-feed-count").textContent = notificationsCleared
+        ? "No notifications"
+        : `${unreadCount} unread · ${notificationSeeds.length} demo items`;
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notification-list");
+      list.replaceChildren();
+      const visible = getVisibleNotifications();
+      if (visible.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "notification-empty";
+        const icon = document.createElement("div");
+        icon.className = "notification-empty-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "✓";
+        const title = document.createElement("div");
+        title.className = "notification-empty-title";
+        title.textContent = notificationsCleared ? "You're all caught up" : "No notifications here";
+        const copy = document.createElement("div");
+        copy.className = "notification-empty-copy";
+        copy.textContent = notificationsCleared
+          ? "Your notification list is clear. New demo items will appear here when available."
+          : "Try another category or read-status filter to see other demo notifications.";
+        empty.append(icon, title, copy);
+        list.append(empty);
+      } else {
+        visible.forEach((item) => {
+          const isRead = readNotificationIds.has(item.id);
+          const card = document.createElement("article");
+          card.className = "notification-card";
+          card.dataset.category = item.category;
+          card.dataset.unread = String(!isRead);
+          const icon = document.createElement("div");
+          icon.className = "notification-card-icon";
+          icon.setAttribute("aria-hidden", "true");
+          icon.textContent = item.icon;
+          const content = document.createElement("div");
+          content.className = "notification-card-content";
+          const titleRow = document.createElement("div");
+          titleRow.className = "notification-card-title-row";
+          const title = document.createElement("div");
+          title.className = "notification-card-title";
+          title.textContent = item.title;
+          const demoTag = document.createElement("span");
+          demoTag.className = "notification-demo-tag";
+          demoTag.textContent = "DEMO";
+          titleRow.append(title, demoTag);
+          const message = document.createElement("p");
+          message.className = "notification-message";
+          message.textContent = item.message;
+          const timestamp = document.createElement("div");
+          timestamp.className = "notification-timestamp";
+          timestamp.textContent = item.timestamp;
+          content.append(titleRow, message, timestamp);
+          card.append(icon, content);
+          if (isRead) {
+            const status = document.createElement("span");
+            status.className = "notification-status";
+            status.textContent = "Read";
+            content.append(status);
+          } else {
+            const markRead = document.createElement("button");
+            markRead.type = "button";
+            markRead.className = "notification-mark-read";
+            markRead.textContent = "Mark as read";
+            markRead.setAttribute("aria-label", `Mark ${item.title} as read`);
+            markRead.addEventListener("click", () => {
+              readNotificationIds.add(item.id);
+              saveNotificationState();
+              renderNotifications();
+            });
+            card.append(markRead);
+          }
+          list.append(card);
+        });
+      }
+      updateNotificationCount();
+    }
+
+    loadNotificationState();
+    loadNotificationPreferences();
+    syncNotificationPreferenceInputs();
+    renderNotifications();
+
+    const preorderStorageKey = "luma-preorder-interest";
+    const preorderForm = document.getElementById("preorder-form");
+    const preorderName = document.getElementById("preorder-name");
+    const preorderEmail = document.getElementById("preorder-email");
+    const preorderStatus = document.getElementById("preorder-status");
+    const preorderSubmit = document.getElementById("preorder-submit");
+    const preorderRemove = document.getElementById("preorder-remove");
+
+    function setPreorderStatus(message, state = "info") {
+      preorderStatus.textContent = message;
+      preorderStatus.dataset.state = state;
+    }
+
+    try {
+      const savedInterest = localStorage.getItem(preorderStorageKey);
+      if (savedInterest) {
+        const interest = JSON.parse(savedInterest);
+        if (!interest || typeof interest.name !== "string" || typeof interest.email !== "string") {
+          throw new Error("Saved pre-order interest has an invalid format.");
+        }
+        preorderName.value = interest.name;
+        preorderEmail.value = interest.email;
+        preorderSubmit.textContent = "Update my interest";
+        preorderRemove.hidden = false;
+        setPreorderStatus(`Your interest is saved on this device for ${interest.email}. No purchase has been made.`);
+      }
+    } catch (error) {
+      console.error("Could not load saved pre-order interest.", error);
+      setPreorderStatus("Could not load saved details from this browser. You can still try saving your interest.", "error");
+    }
+
+    preorderForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const interest = {
+        name: preorderName.value.trim(),
+        email: preorderEmail.value.trim()
+      };
+      if (!interest.name || !interest.email) {
+        setPreorderStatus("Enter your name and a valid email address.", "error");
+        return;
+      }
+      try {
+        localStorage.setItem(preorderStorageKey, JSON.stringify(interest));
+        preorderSubmit.textContent = "Update my interest";
+        preorderRemove.hidden = false;
+        setPreorderStatus(`Thanks, ${interest.name}. Your interest is saved on this device for ${interest.email}; no purchase has been made.`);
+      } catch (error) {
+        console.error("Could not save pre-order interest.", error);
+        setPreorderStatus("Unable to save your details in this browser. Nothing was sent to a server.", "error");
+      }
+    });
+
+    preorderRemove.addEventListener("click", () => {
+      try {
+        localStorage.removeItem(preorderStorageKey);
+        preorderForm.reset();
+        preorderSubmit.textContent = "Save my interest";
+        preorderRemove.hidden = true;
+        setPreorderStatus("Saved details removed from this browser.");
+      } catch (error) {
+        console.error("Could not remove saved pre-order interest.", error);
+        setPreorderStatus("Unable to remove the saved details from this browser.", "error");
+      }
+    });
+
+    const backdrop = document.getElementById("modal-backdrop");
+    const modalTitle = document.getElementById("modal-title");
+    const modalCopy = document.getElementById("modal-copy");
+    const authForm = document.getElementById("auth-form");
+    const authNameField = document.getElementById("auth-name-field");
+    const authPhoneField = document.getElementById("auth-phone-field");
+    const authPassword = document.getElementById("auth-password");
+    const authError = document.getElementById("auth-error");
+    const authSubmit = document.getElementById("auth-submit");
+    const authSwitch = document.getElementById("auth-switch");
+    const accountButton = document.getElementById("account-button");
+    const demoNotice = document.querySelector(".demo-notice");
+    const modalDone = document.getElementById("modal-done");
+    let authMode = null;
+    let csrfToken = "";
+    let currentUser = null;
+    const apiBaseUrl = document.querySelector('meta[name="api-base"]').content.trim().replace(/\/+$/, "");
+    const authApiUrl = (route) => `${apiBaseUrl}/api/auth/${route}`;
+
+    function openModal(title, copy) {
+      authMode = null;
+      authForm.hidden = true;
+      authSwitch.hidden = true;
+      demoNotice.hidden = false;
+      modalDone.hidden = false;
+      modalTitle.textContent = title;
+      modalCopy.textContent = copy;
+      backdrop.classList.add("open");
+      document.getElementById("modal-close").focus();
+    }
+    function closeModal() {
+      backdrop.classList.remove("open");
+      if (authMode !== null) {
+        authForm.reset();
+        authError.textContent = "";
+      }
+      authMode = null;
+    }
+
+    function openAuthModal(mode) {
+      authMode = mode;
+      const signup = mode === "signup";
+      modalTitle.textContent = signup ? "Create your account" : "Welcome back";
+      modalCopy.textContent = signup
+        ? "Create a Luma account to get started. Your password is securely hashed on the server."
+        : "Sign in to your Luma account.";
+      authNameField.hidden = !signup;
+      authPhoneField.hidden = !signup;
+      document.getElementById("auth-name").required = signup;
+      document.getElementById("auth-phone").required = signup;
+      authPassword.autocomplete = signup ? "new-password" : "current-password";
+      authPassword.minLength = signup ? 12 : 1;
+      authPassword.value = "";
+      authError.textContent = "";
+      authSubmit.textContent = signup ? "Create account" : "Sign in";
+      authSubmit.disabled = false;
+      authSwitch.textContent = signup ? "Already have an account? Sign in" : "New to Luma? Create an account";
+      authSwitch.hidden = false;
+      authForm.hidden = false;
+      demoNotice.hidden = true;
+      modalDone.hidden = true;
+      backdrop.classList.add("open");
+      document.getElementById(signup ? "auth-name" : "auth-email").focus();
+    }
+
+    function updateAccountUI(user) {
+      currentUser = user;
+      accountButton.textContent = user ? "Sign out" : "Create account";
+      accountButton.setAttribute("aria-label", user ? `Sign out ${user.name}` : "Create account or sign in");
+      document.getElementById("profile-name").textContent = user ? user.name : "Guest";
+      document.getElementById("profile-plan").textContent = user ? user.email : "Not signed in";
+      if (user) {
+        document.getElementById("settings-full-name").value = user.name;
+        document.getElementById("settings-email").value = user.email;
+        document.getElementById("settings-avatar").alt = `${user.name} profile picture`;
+        document.querySelector(".profile .avatar-photo").alt = `${user.name} profile picture`;
+      }
+    }
+
+    async function refreshCsrfToken() {
+      const response = await fetch(authApiUrl("csrf"), { credentials: "include" });
+      const result = await response.json();
+      if (!response.ok || !result.success || typeof result.csrfToken !== "string") {
+        throw new Error(result.message || "Could not initialize a secure account session.");
+      }
+      csrfToken = result.csrfToken;
+    }
+
+    async function refreshCurrentUser() {
+      const response = await fetch(authApiUrl("me"), { credentials: "include" });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Could not check the current account session.");
+      }
+      updateAccountUI(result.user || null);
+    }
+
+    authSwitch.addEventListener("click", () => openAuthModal(authMode === "signup" ? "login" : "signup"));
+    accountButton.addEventListener("click", async () => {
+      if (!currentUser) {
+        openAuthModal("signup");
+        return;
+      }
+      accountButton.disabled = true;
+      try {
+        if (!csrfToken) await refreshCsrfToken();
+        const response = await fetch(authApiUrl("logout"), {
+          method: "POST",
+          credentials: "include",
+          headers: { "X-CSRF-Token": csrfToken }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Could not sign out.");
+        csrfToken = "";
+        updateAccountUI(null);
+        showToast("You have signed out.");
+        await refreshCsrfToken();
+      } catch (error) {
+        console.error("Account sign-out failed.", error);
+        showToast(error.message || "Could not sign out. Please try again.");
+      } finally {
+        accountButton.disabled = false;
+      }
+    });
+
+    authForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      authError.textContent = "";
+      authSubmit.disabled = true;
+      authSubmit.textContent = authMode === "signup" ? "Creating account…" : "Signing in…";
+      try {
+        if (!csrfToken) await refreshCsrfToken();
+        const payload = {
+          email: document.getElementById("auth-email").value.trim(),
+          password: authPassword.value
+        };
+        if (authMode === "signup") {
+          payload.name = document.getElementById("auth-name").value.trim();
+          payload.phone = document.getElementById("auth-phone").value.trim();
+        }
+        const response = await fetch(authApiUrl(authMode), {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Account request failed.");
+        const signedUp = authMode === "signup";
+        csrfToken = result.csrfToken || "";
+        updateAccountUI(result.user);
+        closeModal();
+        showToast(signedUp ? "Your account is ready." : "You are signed in.");
+      } catch (error) {
+        console.error("Account request failed.", error);
+        authError.textContent = error.message || "Could not complete the account request. Please try again.";
+        authSubmit.disabled = false;
+        authSubmit.textContent = authMode === "signup" ? "Create account" : "Sign in";
+      }
+    });
+
+    Promise.all([refreshCsrfToken(), refreshCurrentUser()]).catch((error) => {
+      console.error("Could not initialize account features.", error);
+      accountButton.title = "Start the site with the Express server to use accounts.";
+    });
+    document.querySelectorAll("[data-action]").forEach((button) => {
+      button.addEventListener("click", () => openModal(
+        button.dataset.action,
+        button.dataset.action === "Add a wallet"
+          ? "In a full Luma account, you could connect a wallet you already own. This preview does not connect to any wallet or collect account details."
+          : "Thanks for exploring Luma. This is a portfolio dashboard preview, so this section is not connected to a live account."
+      ));
+    });
+    document.getElementById("modal-close").addEventListener("click", closeModal);
+    document.getElementById("modal-done").addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (event) => { if (event.target === backdrop) closeModal(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeModal(); });
+
+    document.querySelectorAll(".nav-item").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".nav-item").forEach((item) => {
+          item.classList.remove("active");
+          item.removeAttribute("aria-current");
+        });
+        button.classList.add("active");
+        button.setAttribute("aria-current", "page");
+        document.getElementById("breadcrumb-page").textContent = button.dataset.page;
+        const settingsVisible = button.dataset.page === "Settings";
+        const notificationsVisible = button.dataset.page === "Notifications";
+        const nonOverviewPage = settingsVisible || notificationsVisible;
+        document.getElementById("overview-heading").hidden = nonOverviewPage;
+        document.getElementById("overview-summary").hidden = nonOverviewPage;
+        document.getElementById("preorder-card").hidden = nonOverviewPage;
+        document.getElementById("overview-details").hidden = nonOverviewPage;
+        document.getElementById("settings-view").hidden = !settingsVisible;
+        document.getElementById("notifications-view").hidden = !notificationsVisible;
+        if (settingsVisible) {
+          document.getElementById("settings-title").focus();
+        } else if (notificationsVisible) {
+          document.getElementById("notifications-title").focus();
+        } else if (button.dataset.page !== "Overview") {
+          showToast(`${button.dataset.page} preview — your dashboard stays in demo mode.`);
+        }
+      });
+    });
+
+    document.getElementById("notification-bell").addEventListener("click", () => {
+      document.querySelector('[data-page="Notifications"]').click();
+    });
+
+    document.querySelectorAll("[data-notification-category]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        notificationCategory = tab.dataset.notificationCategory;
+        document.querySelectorAll("[data-notification-category]").forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          item.tabIndex = selected ? 0 : -1;
+        });
+        renderNotifications();
+      });
+    });
+
+    document.querySelectorAll("[data-notification-status]").forEach((button) => {
+      button.addEventListener("click", () => {
+        notificationStatus = button.dataset.notificationStatus;
+        document.querySelectorAll("[data-notification-status]").forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+        renderNotifications();
+      });
+    });
+
+    document.getElementById("mark-all-read").addEventListener("click", () => {
+      notificationSeeds.forEach((item) => readNotificationIds.add(item.id));
+      saveNotificationState();
+      renderNotifications();
+      showToast("All demo notifications marked as read.");
+    });
+
+    document.querySelectorAll("[data-notification-pref]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const key = input.dataset.notificationPref;
+        const previous = notificationPreferences[key];
+        notificationPreferences[key] = input.checked;
+        if (!saveNotificationPreferences()) {
+          notificationPreferences[key] = previous;
+        }
+        syncNotificationPreferenceInputs();
+      });
+    });
+
+    const clearConfirmBackdrop = document.getElementById("clear-confirm-backdrop");
+    const clearNotificationsButton = document.getElementById("clear-all-notifications");
+    const cancelClearButton = document.getElementById("cancel-clear-notifications");
+    const confirmClearButton = document.getElementById("confirm-clear-notifications");
+    function closeClearConfirm() {
+      clearConfirmBackdrop.classList.remove("open");
+      clearNotificationsButton.focus();
+    }
+    clearNotificationsButton.addEventListener("click", () => {
+      clearConfirmBackdrop.classList.add("open");
+      cancelClearButton.focus();
+    });
+    cancelClearButton.addEventListener("click", closeClearConfirm);
+    confirmClearButton.addEventListener("click", () => {
+      notificationsCleared = true;
+      notificationCategory = "all";
+      notificationStatus = "all";
+      document.querySelector('[data-notification-category="all"]').click();
+      document.querySelector('[data-notification-status="all"]').click();
+      saveNotificationState();
+      renderNotifications();
+      closeClearConfirm();
+      showToast("Demo notifications cleared from this browser.");
+    });
+    clearConfirmBackdrop.addEventListener("click", (event) => {
+      if (event.target === clearConfirmBackdrop) closeClearConfirm();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (!clearConfirmBackdrop.classList.contains("open")) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeClearConfirm();
+      } else if (event.key === "Tab") {
+        const first = cancelClearButton;
+        const last = confirmClearButton;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    const settingTabs = [...document.querySelectorAll("[data-setting-tab]")];
+    function selectSettingsTab(tab) {
+      settingTabs.forEach((item) => {
+        const selected = item === tab;
+        item.setAttribute("aria-selected", String(selected));
+        item.tabIndex = selected ? 0 : -1;
+        const panel = document.getElementById(`settings-${item.dataset.settingTab}`);
+        panel.hidden = !selected;
+        panel.setAttribute("aria-labelledby", item.id);
+        item.setAttribute("aria-controls", panel.id);
+      });
+    }
+    settingTabs.forEach((tab, index) => {
+      tab.id = `settings-tab-${tab.dataset.settingTab}`;
+      tab.addEventListener("click", () => selectSettingsTab(tab));
+      tab.addEventListener("keydown", (event) => {
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? settingTabs.length - 1
+          : (index + (event.key === "ArrowDown" ? 1 : -1) + settingTabs.length) % settingTabs.length;
+        settingTabs[nextIndex].focus();
+        selectSettingsTab(settingTabs[nextIndex]);
+      });
+    });
+    selectSettingsTab(settingTabs[0]);
+
+    const paymentStorageKey = "luma-payment-method-v1";
+    const paymentLabels = {
+      bitcoin: "Bitcoin",
+      paypal: "PayPal",
+      bank: "Bank Transfer"
+    };
+    const paymentButtons = [...document.querySelectorAll("[data-payment-method]")];
+    function getStoredPaymentMethod() {
+      try {
+        const storedMethod = localStorage.getItem(paymentStorageKey);
+        return paymentButtons.some((button) => button.dataset.paymentMethod === storedMethod) ? storedMethod : "bitcoin";
+      } catch {
+        return "bitcoin";
+      }
+    }
+    let selectedPaymentMethod = getStoredPaymentMethod();
+    function syncPaymentMethods(method) {
+      selectedPaymentMethod = method;
+      paymentButtons.forEach((button) => {
+        const active = button.dataset.paymentMethod === method;
+        button.setAttribute("aria-pressed", String(active));
+      });
+    }
+    syncPaymentMethods(selectedPaymentMethod);
+    paymentButtons.forEach((button) => {
+      button.addEventListener("click", () => syncPaymentMethods(button.dataset.paymentMethod));
+    });
+    document.querySelectorAll("[data-save-payment-method]").forEach((button) => {
+      button.addEventListener("click", () => {
+        try { localStorage.setItem(paymentStorageKey, selectedPaymentMethod); }
+        catch (error) { console.warn("Could not save preferred payment method.", error); }
+        showToast(`Preferred payment method saved: ${paymentLabels[selectedPaymentMethod] || "Bitcoin"}.`);
+      });
+    });
+
+    document.querySelectorAll("[data-save-settings]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!button.closest("#settings-profile")) showToast("Preferences applied for this demo session.");
+      });
+    });
+    document.querySelectorAll("[data-demo-action]").forEach((button) => {
+      button.addEventListener("click", () => showToast(button.dataset.demoAction));
+    });
+
+    const profileNameInput = document.getElementById("settings-full-name");
+    const profileEmailInput = document.getElementById("settings-email");
+    const profileUsernameInput = document.getElementById("settings-username");
+    document.querySelectorAll("#settings-profile [data-save-settings]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!profileNameInput.reportValidity() || !profileEmailInput.reportValidity() || !profileUsernameInput.reportValidity()) return;
+        const name = profileNameInput.value.trim();
+        if (!name) {
+          profileNameInput.setCustomValidity("Enter your full name.");
+          profileNameInput.reportValidity();
+          profileNameInput.setCustomValidity("");
+          return;
+        }
+        document.getElementById("profile-name").textContent = name;
+        document.getElementById("settings-avatar").alt = `${name} profile picture`;
+        document.querySelector(".profile .avatar-photo").alt = `${name} profile picture`;
+        showToast("Profile updated for this demo session.");
+      });
+    });
+
+    let profilePhotoUrl = null;
+    document.getElementById("profile-photo-input").addEventListener("change", (event) => {
+      const [file] = event.target.files;
+      if (!file) return;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        event.target.value = "";
+        showToast("Choose a JPG, PNG, or WebP image under 5 MB.");
+        return;
+      }
+      if (profilePhotoUrl) URL.revokeObjectURL(profilePhotoUrl);
+      profilePhotoUrl = URL.createObjectURL(file);
+      document.querySelectorAll(".avatar-photo").forEach((image) => { image.src = profilePhotoUrl; });
+      showToast("Profile picture preview updated for this session.");
+    });
+
+    document.querySelectorAll("[data-color-mode-choice]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.body.dataset.colorMode = button.dataset.colorModeChoice;
+        document.querySelectorAll("[data-color-mode-choice]").forEach((choice) => choice.setAttribute("aria-pressed", String(choice === button)));
+      });
+    });
+    document.querySelectorAll("[data-accent-choice]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.body.dataset.accent = button.dataset.accentChoice;
+        document.querySelectorAll("[data-accent-choice]").forEach((choice) => choice.setAttribute("aria-pressed", String(choice === button)));
+      });
+    });
+
+    document.getElementById("settings-signout").addEventListener("click", () => {
+      if (currentUser) accountButton.click();
+      else showToast("There is no signed-in account to sign out of.");
+    });
+
+    document.querySelectorAll(".filter-chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter-chip").forEach((chip) => chip.classList.remove("active"));
+        button.classList.add("active");
+        document.querySelectorAll(".asset-row").forEach((row) => {
+          row.hidden = button.dataset.filter !== "all" && row.dataset.change !== (button.dataset.filter === "gainers" ? "positive" : "negative");
+        });
+      });
+    });
+
+    const chartPoints = {
+      "1D": { labels: ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM", "Now"], path: "M0 91 C35 88 56 102 88 96 S130 79 163 84 S205 67 239 75 S274 65 309 71 S351 52 385 59 S430 67 462 51 S504 61 539 43 S583 54 616 32 S664 37 700 20", end: 20 },
+      "1W": { labels: ["Oct 19", "Oct 20", "Oct 21", "Oct 22", "Oct 23", "Oct 24", "Oct 25"], path: "M0 116 C28 108 36 112 57 101 S91 94 113 100 S145 85 168 88 S202 79 225 84 S259 71 280 77 S311 64 337 70 S365 56 391 64 S422 49 445 55 S476 59 499 46 S527 41 553 49 S579 30 602 37 S632 25 650 31 S678 17 700 12", end: 12 },
+      "1M": { labels: ["Sep 26", "Oct 1", "Oct 6", "Oct 11", "Oct 16", "Oct 21", "Oct 25"], path: "M0 108 C30 99 48 110 82 95 S120 92 151 99 S185 76 218 84 S259 98 292 72 S333 77 362 64 S399 78 430 61 S464 66 499 47 S539 61 568 42 S610 50 638 30 S677 37 700 12", end: 12 },
+      "1Y": { labels: ["Nov ’25", "Jan ’26", "Mar", "May", "Jul", "Sep", "Oct"], path: "M0 124 C30 112 51 127 82 103 S124 111 151 94 S190 107 219 83 S249 91 280 71 S318 86 347 65 S377 81 409 57 S443 66 474 47 S510 63 541 41 S574 57 604 34 S647 44 672 24 S690 22 700 12", end: 12 },
+      "ALL": { labels: ["2022", "2023", "2024", "Jan ’25", "Apr", "Jul", "Oct"], path: "M0 123 C27 114 40 128 70 108 S106 119 136 94 S166 108 199 83 S225 98 258 77 S286 88 315 70 S346 84 374 62 S411 74 443 55 S472 72 506 47 S539 58 568 39 S602 54 634 31 S675 42 700 12", end: 12 }
+    };
+    document.querySelectorAll(".period-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".period-button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        const data = chartPoints[button.dataset.period];
+        const line = document.getElementById("chart-line");
+        const point = document.getElementById("chart-point");
+        line.setAttribute("d", data.path);
+        document.getElementById("chart-area").setAttribute("d", `${data.path} L700 150 L0 150Z`);
+        point.setAttribute("cy", data.end);
+        document.getElementById("chart-labels").innerHTML = data.labels.map((label) => `<span>${label}</span>`).join("");
+      });
+    });
+
+    const visibilityButton = document.getElementById("visibility-toggle");
+    let balanceVisible = true;
+    const balanceAmount = document.getElementById("balance-amount");
+    const startingBalance = 24680.52;
+    let currentBalance = startingBalance;
+    const balanceFormatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2
+    });
+
+    setInterval(() => {
+      const drift = (startingBalance - currentBalance) * 0.12;
+      const marketMovement = (Math.random() - 0.5) * 18;
+      currentBalance = Math.max(0, currentBalance + drift + marketMovement);
+      balanceAmount.textContent = balanceVisible
+        ? balanceFormatter.format(currentBalance)
+        : "••••••••";
+    }, 1800);
+
+    visibilityButton.addEventListener("click", () => {
+      balanceVisible = !balanceVisible;
+      balanceAmount.textContent = balanceVisible ? balanceFormatter.format(currentBalance) : "••••••••";
+      visibilityButton.setAttribute("aria-pressed", String(!balanceVisible));
+      visibilityButton.setAttribute("aria-label", balanceVisible ? "Hide portfolio balance" : "Show portfolio balance");
+    });
+  </script>
+</body>
+</html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
