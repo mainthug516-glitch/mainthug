@@ -18,19 +18,14 @@ Deploy behind HTTPS. Set `NODE_ENV=production`, a unique `SESSION_SECRET`, `FRON
 
 ### Render deployment
 
-This project is ready to deploy as a single Node service on Render using the included `render.yaml` file.
+This project deploys as a single Node web service on Render using the included `render.yaml` Blueprint. The service serves the dashboard and its account API from the same HTTPS origin. It uses Render's free plan, which has an ephemeral filesystem; demo accounts and sessions stored in SQLite can be lost when the service restarts or is redeployed. This dashboard uses simulated market and portfolio data and does not process payments or trade crypto.
 
 1. Push the project to GitHub.
-2. In Render, create a new "Web Service" and connect the repository.
-3. Select the default Node runtime.
-4. Render will read `render.yaml` automatically for the service configuration.
-5. Add or confirm the environment variables:
-   - `NODE_ENV=production`
-   - `HOST=0.0.0.0`
-   - `PORT=3000`
-   - `SESSION_SECRET` generated from `node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"`
-   - `FRONTEND_ORIGIN=https://your-render-app.onrender.com`
-   - `DATABASE_DIR=/var/data/luma`
-6. Click deploy. The app will serve the dashboard and API from the same origin.
+2. In the [Render Dashboard](https://dashboard.render.com/), choose **New +** → **Blueprint** and connect `mainthug516-glitch/mainthug`.
+3. Select the `main` branch. Render reads `render.yaml` and shows the service configuration for review.
+4. Apply the Blueprint to create and deploy the `luma-crypto-dashboard` web service. Render generates the `SESSION_SECRET`; the other service settings are defined in `render.yaml`.
+5. When the deploy finishes, open the service URL shown in Render. It should be `https://luma-crypto-dashboard.onrender.com`.
 
-For a custom domain, add the domain in Render, then update the DNS records and set `FRONTEND_ORIGIN` to the final HTTPS origin.
+The free plan does not provide persistent storage for the SQLite database. Before relying on accounts, upgrade to a plan that supports a persistent disk and attach one at `/var/data/luma`, or move the user and session stores to a managed database. Do not store production account data on ephemeral storage. Email verification and password recovery are not implemented, so add these before making accounts available as a production service.
+
+For a custom domain, add the domain in Render, configure its DNS records, and set `FRONTEND_ORIGIN` to the final HTTPS origin.

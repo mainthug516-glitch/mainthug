@@ -4,6 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: .
+    branch: main
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /
