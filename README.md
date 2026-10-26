@@ -18,7 +18,7 @@ Deploy behind HTTPS. Set `NODE_ENV=production`, a unique `SESSION_SECRET`, `FRON
 
 ### Render deployment
 
-This project deploys as a single Node web service on Render using the included `render.yaml` Blueprint. The service serves the dashboard and its account API from the same HTTPS origin. It uses Render's free plan, which has an ephemeral filesystem; demo accounts and sessions stored in SQLite can be lost when the service restarts or is redeployed. This dashboard uses simulated market and portfolio data and does not process payments or trade crypto.
+This project deploys as a single Node web service on Render using the included `render.yaml` Blueprint. The build compiles native modules, including SQLite, on Render to match its Linux runtime. The service serves the dashboard and its account API from the same HTTPS origin. It uses Render's free plan, which has an ephemeral filesystem; demo accounts and sessions stored in SQLite can be lost when the service restarts or is redeployed. This dashboard uses simulated market and portfolio data and does not process payments or trade crypto.
 
 1. Push the project to GitHub.
 2. In the [Render Dashboard](https://dashboard.render.com/), choose **New +** → **Blueprint** and connect `mainthug516-glitch/mainthug`.
